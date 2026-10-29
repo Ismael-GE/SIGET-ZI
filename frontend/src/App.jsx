@@ -1,31 +1,54 @@
 
 import { useState } from "react";
 import "./App.css";
-
+import Home from "./pages/Home";
+//Declaramos Usuario y Contraseña 
+const USUARIO_PRUEBA = "admin";
+const CONTRASENA_PRUEBA = "Zermat2026";
 function App() {
   const [usuario, setUsuario] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
   const [recordarSesion, setRecordarSesion] = useState(false);
   const [mensaje, setMensaje] = useState("");
-
+  const [mostrarInicio, setMostrarInicio] = useState(false);
+//Metodo para controlar el envió.
   const manejarInicioSesion = (e) => {
     e.preventDefault();
     setMensaje("");
 
-    if (!usuario.trim() || !contrasena) {
-      setMensaje("Ingresa tu usuario y contraseña.");
-      return;
+    if(
+      usuario.trim()== USUARIO_PRUEBA &&
+      contrasena == CONTRASENA_PRUEBA
+    ){
+    setMensaje("")
+    setMostrarInicio(true);
+    }else{
+      setMensaje("Usuario o Contraseña Incorrectos");
     }
-
-    setMensaje("Formulario listo para conectar con el servidor.");
+    
   };
 
   const recuperarContrasena = () => {
-    setMensaje(
-      "Contacta al admnistrador"
-    );
+    setMensaje("Contacta al administrador.");
   };
+
+  // Mostrar la página principal después de ingresar
+  if (mostrarInicio) {
+    return (
+      <Home
+        usuario={usuario.trim()}
+        onLogout={() => {
+          setMostrarInicio(false);
+          setUsuario("");
+          setContrasena("");
+          setMensaje("");
+          setRecordarSesion(false);
+          setMostrarContrasena(false);
+        }}
+      />
+    );
+  }
 
   return (
     <main className="login-page">
@@ -52,7 +75,6 @@ function App() {
               </span>
 
               <h2>Iniciar sesión</h2>
-
             </header>
 
             <form
@@ -196,12 +218,10 @@ function App() {
               ZERMAT INTERNACIONAL
             </span>
 
-            <h2>
-              SIGET -ZI
-            </h2>
+            <h2>SIGET -ZI</h2>
 
             <p>
-              Sistema de Gestión de Equipos Tecnológicos de 
+              Sistema de Gestión de Equipos Tecnológicos de
               Zermat Internacional
             </p>
 
@@ -217,7 +237,13 @@ function App() {
                     strokeWidth="1.7"
                     aria-hidden="true"
                   >
-                    <rect x="3" y="4" width="18" height="13" rx="2" />
+                    <rect
+                      x="3"
+                      y="4"
+                      width="18"
+                      height="13"
+                      rx="2"
+                    />
                     <path d="M8 21h8M12 17v4" />
                   </svg>
                 </span>
