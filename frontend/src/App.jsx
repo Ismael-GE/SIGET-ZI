@@ -1,4 +1,4 @@
-
+/*Importamos las bibliotecas, useState sirve para guardar información y modificarla durante el dessarroll.*/
 import { useState } from "react";
 import "./App.css";
 import Home from "./pages/Home";
