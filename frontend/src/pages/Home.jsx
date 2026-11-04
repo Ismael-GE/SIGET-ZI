@@ -1,24 +1,45 @@
 
 import { useState } from "react";
 import "./Home.css";
-import Activos from "../components/Activos";
 
-// Datos del inventario.
-const equipos = [];
+import Activos from "../components/Activos";
+import Categorias from "../components/Categorias";
+import Asignaciones from "../components/Asignaciones";
+import Kardex from "../components/Kardex";
+import Mantenimiento from "../components/Mantenimiento";
 
 function Home({ usuario, onLogout }) {
   // Controla qué pantalla se muestra.
   const [vista, setVista] = useState("inicio");
 
+  // Estados generales del sistema.
+  const [equipos, setEquipos] = useState([]);
+  const [asignaciones, setAsignaciones] = useState([]);
+  const [movimientosKardex, setMovimientosKardex] = useState([]);
+  const [mantenimientos, setMantenimientos] = useState([]);
+  const categoriasIniciales = [
+  { id_tipo_activo: 1, categoria: "Computadoras", habilitado: true },
+  { id_tipo_activo: 2, categoria: "Laptops", habilitado: true },
+  { id_tipo_activo: 3, categoria: "Impresoras", habilitado: true },
+  { id_tipo_activo: 4, categoria: "Monitores", habilitado: true },
+  { id_tipo_activo: 5, categoria: "Escáneres", habilitado: true },
+  { id_tipo_activo: 6, categoria: "Dispositivos móviles", habilitado: true },
+  { id_tipo_activo: 7, categoria: "Equipos de red", habilitado: true },
+  { id_tipo_activo: 8, categoria: "Software y licenciamiento", habilitado: true },
+  { id_tipo_activo: 9, categoria: "Refacciones y accesorios", habilitado: true },
+  { id_tipo_activo: 10, categoria: "Tablets", habilitado: true },
+];
+const [categorias, setCategorias] = useState(categoriasIniciales);
+
   // Indicadores del inventario.
   const totalEquipos = equipos.length;
 
   const equiposAsignados = equipos.filter(
-    (equipo) => equipo.usuarioAsignado
+    (equipo) => equipo.estado_activo === "Asignado"
   ).length;
 
   const equiposMantenimiento = equipos.filter(
-    (equipo) => equipo.estado === "Mantenimiento"
+    (equipo) => equipo.estado_activo === "En mantenimiento"
   ).length;
 
   const gastosMantenimiento = 0;
@@ -27,6 +48,18 @@ function Home({ usuario, onLogout }) {
     style: "currency",
     currency: "MXN",
   });
+
+  // Nombre de la pantalla actual.
+  const nombresVistas = {
+    inicio: "Panel principal",
+    inventario: "Inventario de activos",
+    categorias: "Categorías",
+    asignaciones: "Control de asignaciones",
+    kardex: "Historial de movimientos",
+    mantenimiento: "Control de mantenimiento",
+    reportes: "Reportes",
+    configuracion: "Configuración",
+  };
 
   return (
     <main className="home-page">
@@ -41,41 +74,103 @@ function Home({ usuario, onLogout }) {
         <p className="menu-label">MENÚ PRINCIPAL</p>
 
         <nav className="sidebar-menu">
+
+          {/* Inicio */}
           <a
             href="#inicio"
             className={vista === "inicio" ? "active" : ""}
-            onClick={() => setVista("inicio")}
+            onClick={(e) => {
+              e.preventDefault();
+              setVista("inicio");
+            }}
           >
             <span>⌂</span> Inicio
           </a>
 
+          {/* Inventario */}
           <a
             href="#inventario"
             className={vista === "inventario" ? "active" : ""}
-            onClick={() => setVista("inventario")}
+            onClick={(e) => {
+              e.preventDefault();
+              setVista("inventario");
+            }}
           >
             <span>▣</span> Inventario
           </a>
 
-          <a href="#categorias">
+          {/* Categorías */}
+          <a
+            href="#categorias"
+            className={vista === "categorias" ? "active" : ""}
+            onClick={(e) => {
+              e.preventDefault();
+              setVista("categorias");
+            }}
+          >
             <span>▦</span> Categorías
           </a>
 
-          <a href="#asignaciones">
+          {/* Asignaciones */}
+          <a
+            href="#asignaciones"
+            className={vista === "asignaciones" ? "active" : ""}
+            onClick={(e) => {
+              e.preventDefault();
+              setVista("asignaciones");
+            }}
+          >
             <span>♙</span> Asignaciones
           </a>
 
-          <a href="#mantenimiento">
+          {/* Kardex */}
+          <a
+            href="#kardex"
+            className={vista === "kardex" ? "active" : ""}
+            onClick={(e) => {
+              e.preventDefault();
+              setVista("kardex");
+            }}
+          >
+            <span>▤</span> Kardex
+          </a>
+
+          {/* Mantenimiento */}
+          <a
+            href="#mantenimiento"
+            className={vista === "mantenimiento" ? "active" : ""}
+            onClick={(e) => {
+              e.preventDefault();
+              setVista("mantenimiento");
+            }}
+          >
             <span>⚙</span> Mantenimiento
           </a>
 
-          <a href="#reportes">
+          {/* Reportes */}
+          <a
+            href="#reportes"
+            className={vista === "reportes" ? "active" : ""}
+            onClick={(e) => {
+              e.preventDefault();
+              setVista("reportes");
+            }}
+          >
             <span>▤</span> Reportes
           </a>
 
-          <a href="#configuracion">
+          {/* Configuración */}
+          <a
+            href="#configuracion"
+            className={vista === "configuracion" ? "active" : ""}
+            onClick={(e) => {
+              e.preventDefault();
+              setVista("configuracion");
+            }}
+          >
             <span>⚙</span> Configuración
           </a>
+
         </nav>
 
         <button className="logout-button" onClick={onLogout}>
@@ -90,13 +185,11 @@ function Home({ usuario, onLogout }) {
         <header className="home-header">
           <div>
             <p className="breadcrumb">
-              SIGET-ZI / {vista === "inicio" ? "Inicio" : "Inventario"}
+              SIGET-ZI / {nombresVistas[vista] || "Inicio"}
             </p>
 
             <h1>
-              {vista === "inicio"
-                ? "Panel principal"
-                : "Inventario de activos"}
+              {nombresVistas[vista] || "Panel principal"}
             </h1>
 
             <p className="header-description">
@@ -118,10 +211,69 @@ function Home({ usuario, onLogout }) {
 
         {/* PANTALLA DE INVENTARIO */}
         {vista === "inventario" ? (
-          <Activos />
-        ) : (
+          <Activos
+            equipos={equipos}
+            setEquipos={setEquipos}
+            categorias={categorias}
+          />
 
-          /* PANTALLA DE INICIO */
+        /* PANTALLA DE CATEGORÍAS */
+        ) : vista === "categorias" ? (
+          <Categorias
+          categorias={categorias}
+          setCategorias={setCategorias}
+          />
+
+        /* PANTALLA DE ASIGNACIONES */
+        ) : vista === "asignaciones" ? (
+          <Asignaciones
+            equipos={equipos}
+            setEquipos={setEquipos}
+            asignaciones={asignaciones}
+            setAsignaciones={setAsignaciones}
+            movimientosKardex={movimientosKardex}
+            setMovimientosKardex={setMovimientosKardex}
+          />
+
+        /* PANTALLA DE KARDEX */
+        ) : vista === "kardex" ? (
+          <Kardex
+            equipos={equipos}
+            asignaciones={asignaciones}
+            movimientosKardex={movimientosKardex}
+            mantenimientos={mantenimientos}
+          />
+
+        /* PANTALLA DE MANTENIMIENTO */
+       ) : vista === "mantenimiento" ? (
+        <Mantenimiento
+         equipos={equipos}
+        setEquipos={setEquipos}
+         mantenimientos={mantenimientos}
+         setMantenimientos={setMantenimientos}
+        setMovimientosKardex={setMovimientosKardex}
+        />  
+
+        /* PANTALLA DE REPORTES */
+        ) : vista === "reportes" ? (
+          <div className="welcome-card">
+            <h2>Módulo de reportes</h2>
+            <p>
+              Aquí se podrán consultar los reportes generales del sistema.
+            </p>
+          </div>
+
+        /* PANTALLA DE CONFIGURACIÓN */
+        ) : vista === "configuracion" ? (
+          <div className="welcome-card">
+            <h2>Configuración</h2>
+            <p>
+              Aquí se administrarán las configuraciones del sistema.
+            </p>
+          </div>
+
+        /* PANTALLA DE INICIO */
+        ) : (
           <>
             {/* BIENVENIDA */}
             <div className="welcome-card">
@@ -141,7 +293,9 @@ function Home({ usuario, onLogout }) {
             <div className="section-heading">
               <div>
                 <h2>Resumen del sistema</h2>
-                <p>Indicadores generales del inventario tecnológico</p>
+                <p>
+                  Indicadores generales del inventario tecnológico
+                </p>
               </div>
             </div>
 
@@ -183,7 +337,10 @@ function Home({ usuario, onLogout }) {
                   <span className="card-tag">Gastos</span>
                 </div>
 
-                <h3>{formatoMoneda.format(gastosMantenimiento)}</h3>
+                <h3>
+                  {formatoMoneda.format(gastosMantenimiento)}
+                </h3>
+
                 <p>Gastos de mantenimiento registrados</p>
               </article>
 

@@ -1,0 +1,260 @@
+
+.asignaciones-page {
+  color: #1f2937;
+}
+
+.asignaciones-encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 25px 0;
+}
+
+.asignaciones-encabezado h2 {
+  margin: 0 0 6px;
+  color: #172033;
+}
+
+.asignaciones-encabezado p {
+  margin: 0;
+  color: #667085;
+}
+
+.btn-nueva-asignacion,
+.btn-devolucion {
+  border: none;
+  border-radius: 6px;
+  padding: 9px 13px;
+  background: #2457a7;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.asignaciones-resumen {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.asignacion-indicador {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 18px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+}
+
+.asignacion-indicador span {
+  color: #667085;
+  font-size: 14px;
+}
+
+.asignacion-indicador strong {
+  color: #173b70;
+  font-size: 25px;
+}
+
+.asignaciones-tabla-contenedor {
+  padding: 18px;
+  overflow-x: auto;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+}
+
+.asignaciones-busqueda {
+  margin-bottom: 16px;
+}
+
+.asignaciones-busqueda input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  color: #1f2937;
+  background: white;
+}
+
+.asignaciones-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.asignaciones-tabla th,
+.asignaciones-tabla td {
+  padding: 13px 12px;
+  border-bottom: 1px solid #eaecf0;
+  color: #344054;
+  font-size: 14px;
+}
+
+.asignaciones-tabla th {
+  color: #173b70;
+  background: #f8fafc;
+}
+
+.estado-asignacion {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.estado-asignacion.activa {
+  color: #067647;
+  background: #ecfdf3;
+}
+
+.estado-asignacion.devuelta {
+  color: #475467;
+  background: #f2f4f7;
+}
+
+.btn-devolucion {
+  font-size: 12px;
+}
+
+.devolucion-completada {
+  color: #475467;
+  font-size: 12px;
+}
+
+.sin-asignaciones {
+  padding: 25px !important;
+  text-align: center;
+  color: #667085 !important;
+}
+
+.asignaciones-modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.asignaciones-modal {
+  width: 100%;
+  max-width: 760px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 25px;
+  border-radius: 10px;
+  background: white;
+  color: #1f2937;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.asignaciones-modal-encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.asignaciones-modal-encabezado h2 {
+  margin: 0;
+  color: #172033;
+}
+
+.asignaciones-modal-encabezado button {
+  border: none;
+  background: transparent;
+  color: #667085;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.asignaciones-modal h3 {
+  margin: 22px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eaecf0;
+  color: #173b70;
+  font-size: 16px;
+}
+
+.asignaciones-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.asignaciones-form-grid label,
+.asignaciones-campo-completo label {
+  display: block;
+  margin-bottom: 7px;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.asignaciones-form-grid input,
+.asignaciones-form-grid select,
+.asignaciones-campo-completo textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 11px;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  background: white;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.asignaciones-campo-completo {
+  margin-top: 17px;
+}
+
+.asignaciones-campo-completo textarea {
+  resize: vertical;
+}
+
+.asignaciones-modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.asignaciones-modal-acciones button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  background: #2457a7;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.asignaciones-modal-acciones button[type="button"] {
+  background: #667085;
+}
+
+.mensaje-asignacion {
+  margin-top: 12px;
+  color: #b42318;
+  font-size: 13px;
+}
+
+@media (max-width: 700px) {
+  .asignaciones-encabezado {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .asignaciones-resumen,
+  .asignaciones-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

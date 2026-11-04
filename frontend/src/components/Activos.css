@@ -254,3 +254,315 @@
     padding: 18px 20px;
   }
 }
+.mensaje-inventario {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  margin: 15px 0;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.mensaje-inventario.exito {
+  background: #e8f5e9;
+  color: #256b35;
+}
+
+.mensaje-inventario.error {
+  background: #fdecea;
+  color: #a12622;
+}
+
+.mensaje-inventario button {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.acciones-activo {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.acciones-activo button {
+  padding: 6px 9px;
+  border: 1px solid #d7dce2;
+  border-radius: 5px;
+  background: white;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.acciones-activo button:hover {
+  background: #f0f3f7;
+}
+
+.mensaje-inventario {
+  padding: 12px 15px;
+  margin: 12px 0;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.mensaje-inventario.error {
+  color: #842029;
+  background-color: #f8d7da;
+  border: 1px solid #f5c2c7;
+}
+
+.mensaje-inventario.exito {
+  color: #0f5132;
+  background-color: #d1e7dd;
+  border: 1px solid #badbcc;
+}
+
+.acciones-activo {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.acciones-activo button {
+  cursor: pointer;
+}
+
+.aviso-fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.aviso-ventana {
+  background: #fff;
+  width: 100%;
+  max-width: 400px;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+  animation: aparecerAviso 0.2s ease-out;
+}
+
+.aviso-icono {
+  width: 55px;
+  height: 55px;
+  margin: 0 auto 15px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.aviso-ventana.exito .aviso-icono {
+  color: #198754;
+  background: #d1e7dd;
+}
+
+.aviso-ventana.error .aviso-icono {
+  color: #dc3545;
+  background: #f8d7da;
+}
+
+.aviso-ventana h2 {
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.aviso-ventana p {
+  margin-bottom: 22px;
+  color: #555;
+}
+
+.aviso-ventana button {
+  background: #2457a7;
+  color: white;
+  border: none;
+  padding: 11px 30px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.aviso-ventana button:hover {
+  background: #19427f;
+}
+
+@keyframes aparecerAviso {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/*VENTANAS EMERGENTES DE NOTIFICACIÓN*/
+.aviso-fondo {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 10000;
+}
+
+.aviso-ventana {
+  width: 100%;
+  max-width: 430px;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 30px;
+  box-sizing: border-box;
+  text-align: center;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.3);
+  animation: aparecerAviso 0.25s ease-out;
+}
+
+.aviso-icono {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  margin: 0 auto 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.aviso-ventana.error .aviso-icono {
+  background: #f8d7da;
+  color: #dc3545;
+}
+
+.aviso-ventana.exito .aviso-icono {
+  background: #d1e7dd;
+  color: #198754;
+}
+
+.aviso-ventana h2 {
+  color: #202938;
+  font-size: 21px;
+  margin: 0 0 12px;
+}
+
+.aviso-ventana p {
+  color: #555555;
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 25px;
+}
+
+.aviso-ventana button {
+  background: #2457a7;
+  color: white;
+  border: none;
+  border-radius: 7px;
+  padding: 12px 35px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.aviso-ventana button:hover {
+  background: #19427f;
+}
+
+@keyframes aparecerAviso {
+  from {
+    opacity: 0;
+    transform: scale(0.90);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Botones de acciones del inventario */
+.acciones-activo button {
+  background-color: #2457a7;
+  color: #ffffff !important;
+  border: none;
+  padding: 7px 12px;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* Efecto al pasar el cursor */
+.acciones-activo button:hover {
+  background-color: #19427f;
+  color: #ffffff !important;
+}
+
+/* Separación entre botones */
+.acciones-activo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+/* VISUALIZACIÓN DEL DETALLE DEL ACTIVO */
+
+/* Fondo y texto de la ventana */
+.modal-activo {
+  background-color: #ffffff;
+  color: #1f2937;
+}
+
+/* Encabezado */
+.modal-activo .modal-encabezado h2 {
+  color: #172033 !important;
+}
+
+/* Sección donde se muestran los datos */
+.modal-activo .formulario-seccion {
+  background-color: #ffffff;
+  color: #1f2937;
+}
+
+/* Etiquetas de los datos: Inventario, Tipo, Estado, etc. */
+.modal-activo .formulario-seccion p {
+  color: #344054 !important;
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 10px 0;
+}
+
+/* Resaltar los nombres de los campos */
+.modal-activo .formulario-seccion p strong {
+  color: #173b70 !important;
+  font-weight: 700;
+}
+
+/* Botón Cerrar */
+.modal-activo .modal-acciones .btn-cancelar {
+  background-color: #2457a7;
+  color: #ffffff !important;
+  border: none;
+}
+
+.modal-activo .modal-acciones .btn-cancelar:hover {
+  background-color: #19427f;
+}

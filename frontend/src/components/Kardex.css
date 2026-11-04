@@ -1,0 +1,325 @@
+
+/* CONTENEDOR PRINCIPAL */
+.kardex-container {
+  width: 100%;
+  padding: 10px 0 30px;
+}
+
+/* INDICADORES */
+.kardex-resumen {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin: 25px 0;
+}
+
+.kardex-resumen .summary-card {
+  min-width: 0;
+}
+
+/* FILTROS */
+.kardex-filtros {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) 240px;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.kardex-filtros input,
+.kardex-filtros select {
+  width: 100%;
+  min-width: 0;
+  padding: 13px 15px;
+  border: 1px solid #dce2eb;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #263449;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.kardex-filtros input:focus,
+.kardex-filtros select:focus {
+  border-color: #315c9b;
+  box-shadow: 0 0 0 3px rgba(49, 92, 155, 0.12);
+}
+
+/* TABLA */
+.kardex-tabla-contenedor {
+  width: 100%;
+  overflow-x: auto;
+  background: #ffffff;
+  border: 1px solid #e5eaf1;
+  border-radius: 12px;
+}
+
+.kardex-tabla {
+  width: 100%;
+  min-width: 1100px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.kardex-tabla th {
+  padding: 16px 14px;
+  background: #f3f6fa;
+  color: #34445c;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-bottom: 1px solid #e5eaf1;
+}
+
+.kardex-tabla td {
+  padding: 15px 14px;
+  color: #526176;
+  font-size: 13px;
+  border-bottom: 1px solid #edf0f5;
+  vertical-align: middle;
+}
+
+.kardex-tabla tbody tr:hover {
+  background: #f8faff;
+}
+
+.kardex-tabla tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* MENSAJE SIN REGISTROS */
+.kardex-vacio {
+  padding: 35px !important;
+  text-align: center;
+  color: #7b8798 !important;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .kardex-resumen {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .kardex-filtros {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Botón de impresión */
+.kardex-boton-imprimir {
+  background: #174a75;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 11px 18px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.kardex-boton-imprimir:hover {
+  background: #103653;
+}
+
+/* Encabezado que aparecerá en la impresión */
+.kardex-encabezado-impresion {
+  display: none;
+}
+
+.kardex-firmas {
+  display: none;
+}
+
+/* Configuración de impresión */
+@media print {
+  @page {
+    size: landscape;
+    margin: 12mm;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .kardex-area-impresion,
+  .kardex-area-impresion * {
+    visibility: visible;
+  }
+
+  .kardex-area-impresion {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    color: #000;
+    background: #fff;
+  }
+
+  .kardex-controles,
+  .kardex-resumen,
+  .kardex-filtros {
+    display: none !important;
+  }
+
+  .kardex-encabezado-impresion {
+    display: block;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .kardex-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9px;
+  }
+
+  .kardex-tabla th,
+  .kardex-tabla td {
+    border: 1px solid #555;
+    padding: 6px;
+    color: #000;
+  }
+
+  .kardex-tabla th {
+    background: #e5e5e5 !important;
+    print-color-adjust: exact;
+  }
+
+  .kardex-firmas {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    margin-top: 55px;
+  }
+
+  .kardex-firmas div {
+    min-width: 180px;
+  }
+
+  .kardex-firmas p {
+    margin-top: 8px;
+  }
+
+  .kardex-tabla tr {
+    break-inside: avoid;
+  }
+}
+
+/* Distribución de los datos generales del activo */
+.kardex-detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 20px;
+  margin-top: 15px;
+}
+
+.kardex-detalle-grid p {
+  margin: 0;
+  padding: 10px;
+  background: #f7f8fa;
+  border-radius: 6px;
+  overflow-wrap: anywhere;
+}
+
+.kardex-detalle-completo {
+  grid-column: 1 / -1;
+}
+
+/* Tablas del expediente */
+.kardex-tabla-contenedor {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 15px;
+}
+
+.kardex-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 850px;
+}
+
+.kardex-tabla th,
+.kardex-tabla td {
+  padding: 10px;
+  border: 1px solid #e1e5ea;
+  text-align: left;
+  font-size: 13px;
+  vertical-align: top;
+}
+
+.kardex-tabla th {
+  background: #233d59;
+  color: white;
+  font-weight: 600;
+}
+
+.kardex-tabla tbody tr:nth-child(even) {
+  background: #f7f8fa;
+}
+
+.kardex-tabla tbody tr:hover {
+  background: #edf3f9;
+}
+
+/* Filtros */
+.kardex-filtros {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.kardex-filtros input,
+.kardex-filtros select {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid #d5dce5;
+  border-radius: 6px;
+  background: white;
+}
+
+/* Botón PDF */
+.kardex-boton-imprimir {
+  padding: 11px 18px;
+  border: none;
+  border-radius: 6px;
+  background: #233d59;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.kardex-boton-imprimir:hover {
+  background: #172b40;
+}
+
+/* Indicadores */
+.kardex-resumen {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+@media (max-width: 900px) {
+  .kardex-detalle-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .kardex-resumen {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .kardex-filtros {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 550px) {
+  .kardex-detalle-grid,
+  .kardex-resumen {
+    grid-template-columns: 1fr;
+  }
+}
