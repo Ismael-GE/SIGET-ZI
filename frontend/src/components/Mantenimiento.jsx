@@ -1,7 +1,5 @@
-
 import { useState } from "react";
 import "./Mantenimiento.css";
-
 function Mantenimiento({
   equipos = [],
   setEquipos,
@@ -13,7 +11,6 @@ function Mantenimiento({
   const [mensajeError, setMensajeError] = useState("");
   const [mantenimientoSeleccionado, setMantenimientoSeleccionado] =
     useState(null);
-
   const [formularioFinalizacion, setFormularioFinalizacion] = useState({
     fechaFinalizacion: new Date().toISOString().split("T")[0],
     trabajoRealizado: "",
@@ -21,7 +18,6 @@ function Mantenimiento({
     costoFinal: "",
     observacionesFinales: "",
   });
-
   const formularioInicial = {
     equipoId: "",
     tipoMantenimiento: "Preventivo",
@@ -32,47 +28,37 @@ function Mantenimiento({
     costo: "",
     observaciones: "",
   };
-
   const [formulario, setFormulario] = useState(formularioInicial);
-
   // Actualiza los campos del formulario de mantenimiento.
   const actualizarCampo = (e) => {
     const { name, value } = e.target;
-
     setFormulario((anterior) => ({
       ...anterior,
       [name]: value,
     }));
-
     setMensajeError("");
   };
-
   // Cancela el registro y limpia el formulario.
   const cancelarFormulario = () => {
     setMostrarFormulario(false);
     setFormulario(formularioInicial);
     setMensajeError("");
   };
-
   // Guarda un nuevo mantenimiento.
   const guardarMantenimiento = (e) => {
     e.preventDefault();
     setMensajeError("");
-
     const equipoSeleccionado = equipos.find(
       (equipo) => String(equipo.id) === String(formulario.equipoId)
     );
-
     if (!equipoSeleccionado) {
       setMensajeError("Selecciona un equipo válido.");
       return;
     }
-
     if (equipoSeleccionado.estado_activo === "En mantenimiento") {
       setMensajeError("Este equipo ya se encuentra en mantenimiento.");
       return;
     }
-
     if (
       !formulario.fechaIngreso ||
       !formulario.tecnicoResponsable.trim() ||
@@ -81,17 +67,11 @@ function Mantenimiento({
       setMensajeError("Completa todos los campos obligatorios.");
       return;
     }
-
     if (formulario.costo !== "" && Number(formulario.costo) < 0) {
       setMensajeError("El costo no puede ser negativo.");
       return;
     }
-
-    const numeroInventario =
-      equipoSeleccionado.numero_inventario ||
-      equipoSeleccionado.numeroInventario ||
-      "Sin número de inventario";
-
+    const numeroInventario = equipoSeleccionado.numero_inventario || equipoSeleccionado.numeroInventario || "Sin número de inventario";
     const nuevoMantenimiento = {
       id: Date.now(),
       equipoId: equipoSeleccionado.id,
@@ -107,25 +87,13 @@ function Mantenimiento({
       fechaFinalizacion: "",
       condicionFinal: "",
     };
-
     // Registrar el mantenimiento.
     setMantenimientos((anteriores) => [
       ...anteriores,
       nuevoMantenimiento,
     ]);
-
     // Cambiar el estado del equipo.
-    setEquipos((anteriores) =>
-      anteriores.map((equipo) =>
-        String(equipo.id) === String(equipoSeleccionado.id)
-          ? {
-              ...equipo,
-              estado_activo: "En mantenimiento",
-            }
-          : equipo
-      )
-    );
-
+    setEquipos((anteriores) => anteriores.map((equipo) => String(equipo.id) === String(equipoSeleccionado.id) ? { ...equipo,estado_activo: "En mantenimiento",}: equipo));
     // Registrar la entrada en Kardex.
     const nuevoMovimiento = {
       id: Date.now() + 1,
@@ -139,36 +107,21 @@ function Mantenimiento({
       motivo: formulario.descripcion.trim(),
       observaciones: formulario.observaciones.trim(),
     };
-
-    setMovimientosKardex((anteriores) => [
-      ...anteriores,
-      nuevoMovimiento,
-    ]);
-
+    setMovimientosKardex((anteriores) => [...anteriores,nuevoMovimiento,]);
     // Limpiar y cerrar el formulario.
     setFormulario(formularioInicial);
     setMostrarFormulario(false);
     setMensajeError("");
   };
-
   // Actualiza los campos del formulario de finalización.
   const actualizarCampoFinalizacion = (e) => {
-    const { name, value } = e.target;
-
-    setFormularioFinalizacion((anterior) => ({
-      ...anterior,
-      [name]: value,
-    }));
+  const { name, value } = e.target; setFormularioFinalizacion((anterior) => ({...anterior,[name]: value,}));
   };
-
   // Finaliza un mantenimiento y registra la salida en Kardex.
-  const finalizarMantenimiento = (e) => {
-    e.preventDefault();
-
+  const finalizarMantenimiento = (e) => {e.preventDefault();
     if (!mantenimientoSeleccionado) {
       return;
     }
-
     const {
       fechaFinalizacion,
       trabajoRealizado,
@@ -176,7 +129,6 @@ function Mantenimiento({
       costoFinal,
       observacionesFinales,
     } = formularioFinalizacion;
-
     if (
       !fechaFinalizacion ||
       !trabajoRealizado.trim() ||
@@ -187,7 +139,6 @@ function Mantenimiento({
       );
       return;
     }
-
     if (
       fechaFinalizacion < mantenimientoSeleccionado.fechaIngreso
     ) {
@@ -196,30 +147,25 @@ function Mantenimiento({
       );
       return;
     }
-
     if (costoFinal !== "" && Number(costoFinal) < 0) {
       alert("El costo final no puede ser negativo.");
       return;
     }
-
     const equipo = equipos.find(
       (item) =>
         String(item.id) ===
         String(mantenimientoSeleccionado.equipoId)
     );
-
     if (!equipo) {
       alert(
         "No se encontró el equipo relacionado con este mantenimiento."
       );
       return;
     }
-
     const estadoEquipo =
       condicionFinal === "Dañado"
         ? "En mantenimiento"
         : "Disponible";
-
     // Actualizar el registro del mantenimiento.
     setMantenimientos((anteriores) =>
       anteriores.map((item) =>
@@ -236,20 +182,8 @@ function Mantenimiento({
           : item
       )
     );
-
     // Actualizar el estado del equipo.
-    setEquipos((anteriores) =>
-      anteriores.map((item) =>
-        String(item.id) ===
-        String(mantenimientoSeleccionado.equipoId)
-          ? {
-              ...item,
-              estado_activo: estadoEquipo,
-            }
-          : item
-      )
-    );
-
+    setEquipos((anteriores) =>anteriores.map((item) =>String(item.id) ===String(mantenimientoSeleccionado.equipoId)? {...item,estado_activo: estadoEquipo,}: item));
     // Registrar la salida del mantenimiento en Kardex.
     const movimientoKardex = {
       id: Date.now(),
@@ -263,15 +197,9 @@ function Mantenimiento({
       motivo: trabajoRealizado.trim(),
       observaciones: `Condición final: ${condicionFinal}. ${observacionesFinales.trim()}`,
     };
-
-    setMovimientosKardex((anteriores) => [
-      ...anteriores,
-      movimientoKardex,
-    ]);
-
+    setMovimientosKardex((anteriores) => [...anteriores,movimientoKardex,]);
     // Limpiar el formulario de finalización.
     setMantenimientoSeleccionado(null);
-
     setFormularioFinalizacion({
       fechaFinalizacion: new Date().toISOString().split("T")[0],
       trabajoRealizado: "",
@@ -279,13 +207,10 @@ function Mantenimiento({
       costoFinal: "",
       observacionesFinales: "",
     });
-
     alert("Mantenimiento finalizado correctamente.");
   };
-
   return (
     <section className="mantenimiento-container">
-
       {/* ENCABEZADO */}
       <div className="section-heading">
         <div>
@@ -294,58 +219,43 @@ function Mantenimiento({
             Administración de mantenimientos preventivos y correctivos.
           </p>
         </div>
-
         <button
-          type="button"
-          onClick={() => setMostrarFormulario(true)}
-        >
+          type="button" onClick={() => setMostrarFormulario(true)}>
           + Registrar mantenimiento
         </button>
       </div>
-
       {/* INDICADORES */}
       <div className="home-cards">
         <article className="summary-card">
           <h3>{mantenimientos.length}</h3>
           <p>Total de mantenimientos</p>
         </article>
-
         <article className="summary-card">
           <h3>
-            {mantenimientos.filter(
-              (m) => m.estadoMantenimiento === "En proceso"
-            ).length}
+            {mantenimientos.filter((m) => m.estadoMantenimiento === "En proceso").length}
           </h3>
           <p>En proceso</p>
         </article>
-
         <article className="summary-card">
           <h3>
-            {mantenimientos.filter(
-              (m) => m.estadoMantenimiento === "Finalizado"
-            ).length}
+            {mantenimientos.filter((m) => m.estadoMantenimiento === "Finalizado").length}
           </h3>
           <p>Finalizados</p>
         </article>
       </div>
-
       {/* FORMULARIO DE REGISTRO */}
       {mostrarFormulario && (
         <div className="mantenimiento-formulario">
           <h3>Nuevo mantenimiento</h3>
-
           <form onSubmit={guardarMantenimiento}>
             <div className="form-group">
               <label>Equipo *</label>
-
               <select
                 name="equipoId"
                 value={formulario.equipoId}
                 onChange={actualizarCampo}
-                required
-              >
+                required>
                 <option value="">Selecciona un equipo</option>
-
                 {equipos
                   .filter(
                     (equipo) =>
@@ -353,115 +263,69 @@ function Mantenimiento({
                   )
                   .map((equipo) => (
                     <option key={equipo.id} value={equipo.id}>
-                      {equipo.numero_inventario ||
-                        equipo.numeroInventario ||
-                        equipo.id}
-                      {" - "}
+                      {equipo.numero_inventario || equipo.numeroInventario || equipo.id}{" - "}
                       {equipo.marca || "Equipo"}{" "}
                       {equipo.modelo || ""}
                     </option>
                   ))}
               </select>
             </div>
-
             <div className="form-group">
               <label>Tipo de mantenimiento *</label>
-
               <select
                 name="tipoMantenimiento"
                 value={formulario.tipoMantenimiento}
-                onChange={actualizarCampo}
-              >
+                onChange={actualizarCampo}>
                 <option value="Preventivo">Preventivo</option>
                 <option value="Correctivo">Correctivo</option>
               </select>
             </div>
-
             <div className="form-group">
               <label>Fecha de ingreso *</label>
-
-              <input
-                type="date"
-                name="fechaIngreso"
-                value={formulario.fechaIngreso}
-                onChange={actualizarCampo}
-                required
-              />
+              <input type="date" name="fechaIngreso" value={formulario.fechaIngreso} onChange={actualizarCampo} required/>
             </div>
-
             <div className="form-group">
               <label>Técnico responsable *</label>
-
-              <input
-                type="text"
-                name="tecnicoResponsable"
-                value={formulario.tecnicoResponsable}
-                onChange={actualizarCampo}
-                placeholder="Nombre del técnico"
-                required
-              />
+              <input type="text" name="tecnicoResponsable" value={formulario.tecnicoResponsable} onChange={actualizarCampo} placeholder="Nombre del técnico" required/>
             </div>
-
             <div className="form-group">
               <label>Descripción del mantenimiento *</label>
-
               <textarea
                 name="descripcion"
                 value={formulario.descripcion}
                 onChange={actualizarCampo}
                 placeholder="Describe el problema o trabajo que se realizará"
-                required
-              />
+                required/>
             </div>
-
             <div className="form-group">
               <label>Refacciones y consumibles</label>
-
               <textarea
                 name="refacciones"
                 value={formulario.refacciones}
                 onChange={actualizarCampo}
-                placeholder="Materiales utilizados o requeridos"
-              />
+                placeholder="Materiales utilizados o requeridos"/>
             </div>
-
             <div className="form-group">
               <label>Costo estimado (MXN)</label>
-
-              <input
-                type="number"
-                name="costo"
-                min="0"
-                step="0.01"
-                value={formulario.costo}
-                onChange={actualizarCampo}
-                placeholder="0.00"
-              />
+              <input type="number"name="costo"min="0"step="0.01"value={formulario.costo}onChange={actualizarCampo} placeholder="0.00"/>
             </div>
-
             <div className="form-group">
               <label>Observaciones</label>
-
               <textarea
                 name="observaciones"
                 value={formulario.observaciones}
                 onChange={actualizarCampo}
-                placeholder="Información adicional"
-              />
+                placeholder="Información adicional"/>
             </div>
-
             {mensajeError && (
               <p className="mensaje-error">{mensajeError}</p>
             )}
-
             <div className="form-actions">
               <button
                 type="button"
-                onClick={cancelarFormulario}
-              >
+                onClick={cancelarFormulario}>
                 Cancelar
               </button>
-
               <button type="submit">
                 Guardar mantenimiento
               </button>
@@ -469,29 +333,19 @@ function Mantenimiento({
           </form>
         </div>
       )}
-      
+    
 {/* FORMULARIO DE FINALIZACIÓN */}
 {mantenimientoSeleccionado && (
   <div className="mantenimiento-formulario">
     <h3>Finalizar mantenimiento</h3>
-
     <p>
       Equipo: <strong>{mantenimientoSeleccionado.numeroInventario}</strong>
     </p>
-
     <form onSubmit={finalizarMantenimiento}>
       <div className="form-group">
         <label>Fecha de finalización *</label>
-        <input
-          type="date"
-          name="fechaFinalizacion"
-          value={formularioFinalizacion.fechaFinalizacion}
-          min={mantenimientoSeleccionado.fechaIngreso}
-          onChange={actualizarCampoFinalizacion}
-          required
-        />
+        <input type="date" name="fechaFinalizacion" value={formularioFinalizacion.fechaFinalizacion} min={mantenimientoSeleccionado.fechaIngreso} onChange={actualizarCampoFinalizacion}required/>
       </div>
-
       <div className="form-group">
         <label>Trabajo realizado *</label>
         <textarea
@@ -499,10 +353,8 @@ function Mantenimiento({
           value={formularioFinalizacion.trabajoRealizado}
           onChange={actualizarCampoFinalizacion}
           placeholder="Describe las actividades realizadas"
-          required
-        />
+          required/>
       </div>
-
       <div className="form-group">
         <label>Condición final del equipo *</label>
         <select
@@ -517,38 +369,24 @@ function Mantenimiento({
           <option value="Dañado">Dañado</option>
         </select>
       </div>
-
       <div className="form-group">
         <label>Costo final (MXN)</label>
-        <input
-          type="number"
-          name="costoFinal"
-          min="0"
-          step="0.01"
-          value={formularioFinalizacion.costoFinal}
-          onChange={actualizarCampoFinalizacion}
-          placeholder="0.00"
-        />
+        <input type="number" name="costoFinal" min="0" step="0.01" value={formularioFinalizacion.costoFinal} onChange={actualizarCampoFinalizacion}placeholder="0.00"/>
       </div>
-
       <div className="form-group">
         <label>Observaciones finales</label>
         <textarea
           name="observacionesFinales"
           value={formularioFinalizacion.observacionesFinales}
           onChange={actualizarCampoFinalizacion}
-          placeholder="Información adicional sobre el mantenimiento"
-        />
+          placeholder="Información adicional sobre el mantenimiento"/>
       </div>
-
       <div className="form-actions">
         <button
           type="button"
-          onClick={() => setMantenimientoSeleccionado(null)}
-        >
+          onClick={() => setMantenimientoSeleccionado(null)}>
           Cancelar
         </button>
-
         <button type="submit">
           Guardar finalización
         </button>
@@ -556,12 +394,9 @@ function Mantenimiento({
     </form>
   </div>
 )}
-
-
       {/* HISTORIAL */}
       <div className="dashboard-panel">
         <h2>Historial de mantenimiento</h2>
-
         {mantenimientos.length === 0 ? (
           <div className="empty-state">
             <span>⚙</span>
@@ -572,8 +407,7 @@ function Mantenimiento({
             {mantenimientos.map((mantenimiento) => (
               <article
                 className="mantenimiento-registro"
-                key={mantenimiento.id}
-              >
+                key={mantenimiento.id}>
                 <div>
                   <strong>{mantenimiento.numeroInventario}</strong>
                   <p>{mantenimiento.descripcion}</p>
@@ -582,8 +416,6 @@ function Mantenimiento({
                     {mantenimiento.fechaIngreso}
                   </small>
                 </div>
-
-                
                 <div className="mantenimiento-acciones">
                     <span>
                      {mantenimiento.estadoMantenimiento}
@@ -606,15 +438,12 @@ function Mantenimiento({
                      </button>
                         )}
                 </div>
-
               </article>
             ))}
           </div>
         )}
       </div>
-
     </section>
   );
 }
-
 export default Mantenimiento;

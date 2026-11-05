@@ -1,0 +1,303 @@
+
+/* ========================================
+   MÓDULO SOFTWARE Y LICENCIAS - SIGET-ZI
+======================================== */
+
+.software-page {
+  width: 100%;
+  padding: 10px;
+  color: #17243b;
+}
+
+.software-encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.software-encabezado h2 {
+  margin: 0 0 6px;
+  color: #17243b;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.software-encabezado p {
+  margin: 0;
+  color: #718096;
+  font-size: 14px;
+}
+
+.software-btn-nuevo {
+  border: none;
+  border-radius: 9px;
+  padding: 12px 18px;
+  background: #3867e8;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.software-btn-nuevo:hover {
+  background: #2854cf;
+  transform: translateY(-1px);
+}
+
+/* INDICADORES */
+
+.software-resumen {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 25px;
+}
+
+.software-indicador {
+  min-height: 105px;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #e8edf5;
+  border-radius: 13px;
+  box-shadow: 0 3px 12px rgba(23, 36, 59, 0.04);
+}
+
+.software-indicador span {
+  display: block;
+  margin-bottom: 12px;
+  color: #718096;
+  font-size: 13px;
+}
+
+.software-indicador strong {
+  color: #17243b;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+/* TABLA */
+
+.software-tabla-contenedor {
+  padding: 22px;
+  background: #ffffff;
+  border: 1px solid #e8edf5;
+  border-radius: 13px;
+  box-shadow: 0 3px 12px rgba(23, 36, 59, 0.04);
+}
+
+.software-busqueda {
+  width: 100%;
+  max-width: 350px;
+  margin-bottom: 18px;
+}
+
+.software-busqueda input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid #dce3ee;
+  border-radius: 8px;
+  outline: none;
+  color: #17243b;
+  font-size: 14px;
+}
+
+.software-busqueda input:focus {
+  border-color: #3867e8;
+  box-shadow: 0 0 0 3px rgba(56, 103, 232, 0.1);
+}
+
+.software-tabla-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.software-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.software-tabla th {
+  padding: 14px 12px;
+  background: #f5f7fb;
+  color: #52617a;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-bottom: 1px solid #e8edf5;
+}
+
+.software-tabla td {
+  padding: 15px 12px;
+  color: #43516a;
+  font-size: 13px;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.software-tabla tbody tr:hover {
+  background: #f8faff;
+}
+
+.software-sin-registros {
+  padding: 35px 15px !important;
+  color: #8793a7 !important;
+  text-align: center;
+}
+
+/* VENTANA DE REGISTRO */
+
+.software-modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: rgba(12, 25, 48, 0.55);
+}
+
+.software-modal {
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 25px;
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+}
+
+.software-modal-encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.software-modal-encabezado h3 {
+  margin: 0;
+  color: #17243b;
+  font-size: 20px;
+}
+
+.software-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 17px;
+}
+
+.software-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: #52617a;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.software-form-grid input,
+.software-form-grid select,
+.software-form-grid textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #dce3ee;
+  border-radius: 8px;
+  outline: none;
+  background: #ffffff;
+  color: #17243b;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.software-form-grid input:focus,
+.software-form-grid select:focus,
+.software-form-grid textarea:focus {
+  border-color: #3867e8;
+  box-shadow: 0 0 0 3px rgba(56, 103, 232, 0.1);
+}
+
+.software-campo-completo {
+  grid-column: 1 / -1;
+}
+
+.software-form-grid textarea {
+  min-height: 85px;
+  resize: vertical;
+}
+
+.software-mensaje {
+  margin-top: 15px;
+  padding: 11px 13px;
+  border-radius: 8px;
+  background: #fff5e5;
+  color: #946200;
+  font-size: 13px;
+}
+
+.software-modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.software-modal-acciones button {
+  padding: 11px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.software-modal-acciones button[type="button"] {
+  background: #edf0f5;
+  color: #52617a;
+}
+
+.software-modal-acciones button[type="submit"] {
+  background: #3867e8;
+  color: #ffffff;
+}
+
+.software-modal-acciones button[type="submit"]:hover {
+  background: #2854cf;
+}
+
+/* DISEÑO RESPONSIVO */
+
+@media (max-width: 1000px) {
+  .software-resumen {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .software-encabezado {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .software-resumen {
+    grid-template-columns: 1fr;
+  }
+
+  .software-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .software-campo-completo {
+    grid-column: auto;
+  }
+
+  .software-modal {
+    padding: 18px;
+  }
+}

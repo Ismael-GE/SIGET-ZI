@@ -9,6 +9,7 @@ function Kardex({
   asignaciones = [],
   movimientosKardex = [],
   mantenimientos = [],
+  incidencias = [],
 }) {
   const [busqueda, setBusqueda] = useState("");
   const [filtroTipo, setFiltroTipo] = useState("Todos");
@@ -33,7 +34,6 @@ function Kardex({
   const obtenerFechaMovimiento = (movimiento) =>
     movimiento?.fechaMovimiento ||
     movimiento?.fecha_evento ||
-    movimiento?.fecha_evento ||
     "";
 
   const obtenerTipoMovimiento = (movimiento) =>
@@ -44,9 +44,10 @@ function Kardex({
   const formatearFecha = (fecha) => {
     if (!fecha) return "—";
 
-    const valor = new Date(`${fecha}`.length === 10
-      ? `${fecha}T12:00:00`
-      : fecha
+    const valor = new Date(
+      `${fecha}`.length === 10
+        ? `${fecha}T12:00:00`
+        : fecha
     );
 
     if (Number.isNaN(valor.getTime())) return fecha;
@@ -65,7 +66,11 @@ function Kardex({
   };
 
   const formatearMoneda = (cantidad, moneda = "MXN") => {
-    if (cantidad === "" || cantidad === null || cantidad === undefined) {
+    if (
+      cantidad === "" ||
+      cantidad === null ||
+      cantidad === undefined
+    ) {
       return "—";
     }
 
@@ -108,6 +113,7 @@ function Kardex({
     );
   };
 
+  // Obtener asignaciones del activo.
   const obtenerAsignaciones = (activo) =>
     asignaciones
       .filter((registro) => perteneceAlActivo(registro, activo))
@@ -117,6 +123,7 @@ function Kardex({
           new Date(a.fechaAsignacion || 0)
       );
 
+  // Obtener mantenimientos del activo.
   const obtenerMantenimientos = (activo) =>
     mantenimientos
       .filter((registro) => perteneceAlActivo(registro, activo))
@@ -126,17 +133,24 @@ function Kardex({
           new Date(a.fechaIngreso || a.fecha_solicitud || 0)
       );
 
+  // Obtener incidencias del activo.
+  const obtenerIncidencias = (activo) =>
+    incidencias
+      .filter((registro) => perteneceAlActivo(registro, activo))
+      .sort(
+        (a, b) =>
+          new Date(b.fecha_reporte || 0) -
+          new Date(a.fecha_reporte || 0)
+      );
+
+  // Obtener movimientos del activo.
   const obtenerMovimientos = (activo) =>
     movimientosKardex
       .filter((registro) => perteneceAlActivo(registro, activo))
       .sort(
         (a, b) =>
-          new Date(
-            obtenerFechaMovimiento(b) || 0
-          ) -
-          new Date(
-            obtenerFechaMovimiento(a) || 0
-          )
+          new Date(obtenerFechaMovimiento(b) || 0) -
+          new Date(obtenerFechaMovimiento(a) || 0)
       );
 
   // --------------------------------------------------
@@ -145,7 +159,9 @@ function Kardex({
 
   const activosDisponibles = useMemo(
     () =>
-      equipos.filter((activo) => obtenerNumeroInventario(activo)),
+      equipos.filter((activo) =>
+        obtenerNumeroInventario(activo)
+      ),
     [equipos]
   );
 
@@ -229,6 +245,10 @@ function Kardex({
     ? obtenerMantenimientos(activoSeleccionado)
     : [];
 
+  const incidenciasConsultadas = activoSeleccionado
+    ? obtenerIncidencias(activoSeleccionado)
+    : [];
+
   const totalMantenimientos = mantenimientosConsultados.reduce(
     (total, mantenimiento) =>
       total +
@@ -243,7 +263,9 @@ function Kardex({
 
   const descargarPDF = () => {
     if (equipos.length === 0) {
-      alert("No hay activos registrados para generar el expediente.");
+      alert(
+        "No hay activos registrados para generar el expediente."
+      );
       return;
     }
 
@@ -285,7 +307,9 @@ function Kardex({
         documento.setFontSize(8);
 
         documento.text(
-          `Número de inventario: ${activo.numero_inventario || "Sin registro"}`,
+          `Número de inventario: ${
+            activo.numero_inventario || "Sin registro"
+          }`,
           margen,
           30
         );
@@ -319,9 +343,17 @@ function Kardex({
         autoTable(documento, {
           startY: posicionY + 3,
           head: [columnas],
-          body: datos.length > 0
-            ? datos
-            : [["Sin información registrada"]],
+          body:
+            datos.length > 0
+              ? datos
+              : [
+                  [
+                    {
+                      content: "Sin información registrada",
+                      colSpan: columnas.length,
+                    },
+                  ],
+                ],
           theme: "grid",
           margin: {
             left: margen,
@@ -348,7 +380,7 @@ function Kardex({
         });
       };
 
-      activosParaPDF.forEach((activo, indice) => {
+      activosParaPDF.forEach((activo) => {
         if (!primeraPagina) {
           documento.addPage();
         }
@@ -360,13 +392,25 @@ function Kardex({
         // FICHA GENERAL
         const ficha = [
           ["Número de inventario", activo.numero_inventario],
-          ["Tipo de activo", activo.tipo_activo || activo.id_tipo_activo],
-          ["Estado", activo.estado_activo || activo.id_estado_activo],
+          [
+            "Tipo de activo",
+            activo.tipo_activo || activo.id_tipo_activo,
+          ],
+          [
+            "Estado",
+            activo.estado_activo || activo.id_estado_activo,
+          ],
           ["Marca", activo.marca],
           ["Modelo", activo.modelo],
           ["Número de serie", activo.numero_serie],
-          ["Proveedor de adquisición", activo.id_proveedor_adquisicion],
-          ["Fecha de adquisición", formatearFecha(activo.fecha_adquisicion)],
+          [
+            "Proveedor de adquisición",
+            activo.id_proveedor_adquisicion,
+          ],
+          [
+            "Fecha de adquisición",
+            formatearFecha(activo.fecha_adquisicion),
+          ],
           [
             "Costo de adquisición",
             formatearMoneda(
@@ -396,19 +440,21 @@ function Kardex({
         // ASIGNACIONES
         const asignacionesActivo = obtenerAsignaciones(activo);
 
-        const filasAsignaciones = asignacionesActivo.map((registro) => [
-          formatearFecha(registro.fechaAsignacion),
-          registro.colaborador || "—",
-          registro.departamento || "—",
-          registro.ubicacion || "—",
-          registro.estadoAsignacion || "—",
-          registro.usuarioEntrega || "—",
-          registro.usuarioRecepcion || "—",
-          registro.condicionEntrega || "—",
-          formatearFecha(registro.fechaFinalizacion),
-          registro.tipoFinalizacion || "—",
-          registro.observaciones || "—",
-        ]);
+        const filasAsignaciones = asignacionesActivo.map(
+          (registro) => [
+            formatearFecha(registro.fechaAsignacion),
+            registro.colaborador || "—",
+            registro.departamento || "—",
+            registro.ubicacion || "—",
+            registro.estadoAsignacion || "—",
+            registro.usuarioEntrega || "—",
+            registro.usuarioRecepcion || "—",
+            registro.condicionEntrega || "—",
+            formatearFecha(registro.fechaFinalizacion),
+            registro.tipoFinalizacion || "—",
+            registro.observaciones || "—",
+          ]
+        );
 
         agregarSeccion(
           "2. HISTORIAL DE ASIGNACIONES",
@@ -444,7 +490,9 @@ function Kardex({
             registro.trabajoRealizado || "—",
             registro.condicionFinal || "—",
             formatearMoneda(registro.costoFinal),
-            registro.observacionesFinales || registro.observaciones || "—",
+            registro.observacionesFinales ||
+              registro.observaciones ||
+              "—",
           ]
         );
 
@@ -467,30 +515,63 @@ function Kardex({
           ]
         );
 
+        // INCIDENCIAS
+        const incidenciasActivo = obtenerIncidencias(activo);
+
+        const filasIncidencias = incidenciasActivo.map(
+          (incidencia) => [
+            formatearFecha(incidencia.fecha_reporte),
+            incidencia.titulo || "—",
+            incidencia.descripcion || "—",
+            incidencia.prioridad || "—",
+            incidencia.estado_incidencia || "—",
+            incidencia.solucion || "—",
+            formatearFecha(incidencia.fecha_cierre),
+          ]
+        );
+
+        agregarSeccion(
+          "4. HISTORIAL DE INCIDENCIAS",
+          filasIncidencias,
+          [
+            "Fecha de reporte",
+            "Título",
+            "Descripción",
+            "Prioridad",
+            "Estado",
+            "Solución",
+            "Fecha de cierre",
+          ]
+        );
+
         // MOVIMIENTOS DEL KARDEX
         const movimientosActivo = obtenerMovimientos(activo);
 
-        const filasMovimientos = movimientosActivo.map((movimiento) => [
-          formatearFechaHora(obtenerFechaMovimiento(movimiento)),
-          obtenerTipoMovimiento(movimiento),
-          movimiento.responsableAnterior || "—",
-          movimiento.responsableNuevo || "—",
-          movimiento.usuarioRegistro ||
-            movimiento.usuario ||
-            movimiento.id_usuario ||
-            "—",
-          movimiento.estado_anterior ||
-            movimiento.estadoAnterior ||
-            "—",
-          movimiento.estado_nuevo ||
-            movimiento.estadoNuevo ||
-            "—",
-          movimiento.descripcion || movimiento.motivo || "—",
-          movimiento.observaciones || "—",
-        ]);
+        const filasMovimientos = movimientosActivo.map(
+          (movimiento) => [
+            formatearFechaHora(
+              obtenerFechaMovimiento(movimiento)
+            ),
+            obtenerTipoMovimiento(movimiento),
+            movimiento.responsableAnterior || "—",
+            movimiento.responsableNuevo || "—",
+            movimiento.usuarioRegistro ||
+              movimiento.usuario ||
+              movimiento.id_usuario ||
+              "—",
+            movimiento.estado_anterior ||
+              movimiento.estadoAnterior ||
+              "—",
+            movimiento.estado_nuevo ||
+              movimiento.estadoNuevo ||
+              "—",
+            movimiento.descripcion || movimiento.motivo || "—",
+            movimiento.observaciones || "—",
+          ]
+        );
 
         agregarSeccion(
-          "4. CRONOLOGÍA DE EVENTOS Y MOVIMIENTOS",
+          "5. CRONOLOGÍA DE EVENTOS Y MOVIMIENTOS",
           filasMovimientos,
           [
             "Fecha",
@@ -507,21 +588,34 @@ function Kardex({
 
         // SECCIONES PENDIENTES DE CONECTAR
         agregarSeccion(
-          "5. INFORMACIÓN PENDIENTE DE INTEGRACIÓN",
+          "6. INFORMACIÓN PENDIENTE DE INTEGRACIÓN",
           [
-            ["Incidencias", "Pendiente de integrar SIS_INCIDENCIA"],
-            ["Garantías", "Pendiente de integrar SIS_GARANTIA_ACTIVO"],
-            ["Componentes", "Pendiente de integrar SIS_COMPONENTE_ACTIVO"],
-            ["Configuración de red", "Pendiente de integrar SIS_CONFIGURACION_RED"],
-            ["Software instalado", "Pendiente de integrar SIS_INSTALACION_SOFTWARE"],
-            ["Gastos desglosados", "Pendiente de integrar DET_GASTO_MANTENIMIENTO"],
+            [
+              "Garantías",
+              "Pendiente de integrar SIS_GARANTIA_ACTIVO",
+            ],
+            [
+              "Componentes",
+              "Pendiente de integrar SIS_COMPONENTE_ACTIVO",
+            ],
+            [
+              "Configuración de red",
+              "Pendiente de integrar SIS_CONFIGURACION_RED",
+            ],
+            [
+              "Software instalado",
+              "Pendiente de integrar SIS_INSTALACION_SOFTWARE",
+            ],
+            [
+              "Gastos desglosados",
+              "Pendiente de integrar DET_GASTO_MANTENIMIENTO",
+            ],
           ],
           ["Sección", "Origen de los datos"]
         );
 
         // FIRMAS
-        let firmaY =
-          documento.lastAutoTable.finalY + 22;
+        let firmaY = documento.lastAutoTable.finalY + 22;
 
         if (firmaY > alto - 25) {
           documento.addPage();
@@ -561,7 +655,11 @@ function Kardex({
       const totalPaginas =
         documento.internal.getNumberOfPages();
 
-      for (let pagina = 1; pagina <= totalPaginas; pagina++) {
+      for (
+        let pagina = 1;
+        pagina <= totalPaginas;
+        pagina++
+      ) {
         documento.setPage(pagina);
         documento.setFontSize(8);
         documento.setFont("helvetica", "normal");
@@ -575,12 +673,15 @@ function Kardex({
       }
 
       const nombreArchivo = activoSeleccionado
-        ? `Kardex_${activoSeleccionado.numero_inventario || "Activo"}.pdf`
+        ? `Kardex_${
+            activoSeleccionado.numero_inventario || "Activo"
+          }.pdf`
         : "Kardex_SIGET-ZI_Activos.pdf";
 
       documento.save(nombreArchivo);
     } catch (error) {
       console.error("Error al generar el PDF:", error);
+
       alert(
         "No fue posible generar el PDF. Revisa la consola para conocer el error."
       );
@@ -634,7 +735,7 @@ function Kardex({
         </article>
       </div>
 
-      {/* SELECTOR DE ACTIVO */}
+      {/* SELECTOR DE ACTIVO Y FILTROS */}
       <div className="kardex-filtros">
         <select
           value={filtroActivo}
@@ -644,7 +745,9 @@ function Kardex({
             setBusqueda("");
           }}
         >
-          <option value="Todos">Consultar todos los activos</option>
+          <option value="Todos">
+            Consultar todos los activos
+          </option>
 
           {activosDisponibles.map((activo) => (
             <option key={activo.id} value={activo.id}>
@@ -666,7 +769,9 @@ function Kardex({
         >
           {tiposMovimiento.map((tipo) => (
             <option key={tipo} value={tipo}>
-              {tipo === "Todos" ? "Todos los movimientos" : tipo}
+              {tipo === "Todos"
+                ? "Todos los movimientos"
+                : tipo}
             </option>
           ))}
         </select>
@@ -722,7 +827,9 @@ function Kardex({
 
               <p>
                 <strong>Adquisición:</strong>{" "}
-                {formatearFecha(activoSeleccionado.fecha_adquisicion)}
+                {formatearFecha(
+                  activoSeleccionado.fecha_adquisicion
+                )}
               </p>
 
               <p>
@@ -773,7 +880,9 @@ function Kardex({
             </article>
 
             <article className="summary-card">
-              <h3>{obtenerMovimientos(activoSeleccionado).length}</h3>
+              <h3>
+                {obtenerMovimientos(activoSeleccionado).length}
+              </h3>
               <p>Eventos en Kardex</p>
             </article>
 
@@ -788,7 +897,9 @@ function Kardex({
             <h3>Historial de asignaciones</h3>
 
             {asignacionesConsultadas.length === 0 ? (
-              <p>No hay asignaciones registradas para este activo.</p>
+              <p>
+                No hay asignaciones registradas para este activo.
+              </p>
             ) : (
               <div className="kardex-tabla-contenedor">
                 <table className="kardex-tabla">
@@ -809,7 +920,9 @@ function Kardex({
                   <tbody>
                     {asignacionesConsultadas.map((registro) => (
                       <tr key={registro.id}>
-                        <td>{formatearFecha(registro.fechaAsignacion)}</td>
+                        <td>
+                          {formatearFecha(registro.fechaAsignacion)}
+                        </td>
                         <td>{registro.colaborador || "—"}</td>
                         <td>{registro.departamento || "—"}</td>
                         <td>{registro.ubicacion || "—"}</td>
@@ -833,7 +946,9 @@ function Kardex({
             <h3>Historial de mantenimiento</h3>
 
             {mantenimientosConsultados.length === 0 ? (
-              <p>No hay mantenimientos registrados para este activo.</p>
+              <p>
+                No hay mantenimientos registrados para este activo.
+              </p>
             ) : (
               <div className="kardex-tabla-contenedor">
                 <table className="kardex-tabla">
@@ -854,7 +969,9 @@ function Kardex({
                     {mantenimientosConsultados.map((registro) => (
                       <tr key={registro.id}>
                         <td>{registro.tipoMantenimiento || "—"}</td>
-                        <td>{formatearFecha(registro.fechaIngreso)}</td>
+                        <td>
+                          {formatearFecha(registro.fechaIngreso)}
+                        </td>
                         <td>{registro.tecnicoResponsable || "—"}</td>
                         <td>{registro.descripcion || "—"}</td>
                         <td>{registro.estadoMantenimiento || "—"}</td>
@@ -863,6 +980,53 @@ function Kardex({
                         </td>
                         <td>{formatearMoneda(registro.costo)}</td>
                         <td>{formatearMoneda(registro.costoFinal)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* INCIDENCIAS */}
+          <div className="dashboard-panel">
+            <h3>Historial de incidencias</h3>
+
+            {incidenciasConsultadas.length === 0 ? (
+              <p>
+                No hay incidencias registradas para este activo.
+              </p>
+            ) : (
+              <div className="kardex-tabla-contenedor">
+                <table className="kardex-tabla">
+                  <thead>
+                    <tr>
+                      <th>Fecha de reporte</th>
+                      <th>Título</th>
+                      <th>Descripción</th>
+                      <th>Prioridad</th>
+                      <th>Estado</th>
+                      <th>Solución</th>
+                      <th>Fecha de cierre</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {incidenciasConsultadas.map((incidencia) => (
+                      <tr key={incidencia.id}>
+                        <td>
+                          {formatearFecha(incidencia.fecha_reporte)}
+                        </td>
+                        <td>{incidencia.titulo || "—"}</td>
+                        <td>{incidencia.descripcion || "—"}</td>
+                        <td>{incidencia.prioridad || "—"}</td>
+                        <td>
+                          {incidencia.estado_incidencia || "—"}
+                        </td>
+                        <td>{incidencia.solucion || "—"}</td>
+                        <td>
+                          {formatearFecha(incidencia.fecha_cierre)}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -887,7 +1051,9 @@ function Kardex({
 
         {movimientosFiltrados.length === 0 ? (
           <div className="empty-state">
-            <p>No hay movimientos que coincidan con la búsqueda.</p>
+            <p>
+              No hay movimientos que coincidan con la búsqueda.
+            </p>
           </div>
         ) : (
           <div className="kardex-tabla-contenedor">
@@ -926,11 +1092,17 @@ function Kardex({
                       {obtenerNumeroInventario(movimiento) || "—"}
                     </td>
 
-                    <td>{obtenerTipoMovimiento(movimiento)}</td>
+                    <td>
+                      {obtenerTipoMovimiento(movimiento)}
+                    </td>
 
-                    <td>{movimiento.responsableAnterior || "—"}</td>
+                    <td>
+                      {movimiento.responsableAnterior || "—"}
+                    </td>
 
-                    <td>{movimiento.responsableNuevo || "—"}</td>
+                    <td>
+                      {movimiento.responsableNuevo || "—"}
+                    </td>
 
                     <td>
                       {movimiento.usuarioRegistro ||

@@ -7,6 +7,8 @@ import Categorias from "../components/Categorias";
 import Asignaciones from "../components/Asignaciones";
 import Kardex from "../components/Kardex";
 import Mantenimiento from "../components/Mantenimiento";
+import Incidencias from "../components/Incidencias";
+import SoftwareLicencias from "../components/AsignacionesSoft";
 
 function Home({ usuario, onLogout }) {
   // Controla qué pantalla se muestra.
@@ -17,19 +19,23 @@ function Home({ usuario, onLogout }) {
   const [asignaciones, setAsignaciones] = useState([]);
   const [movimientosKardex, setMovimientosKardex] = useState([]);
   const [mantenimientos, setMantenimientos] = useState([]);
+  const [incidencias, setIncidencias] = useState([]);
+
+  // Categorías iniciales del inventario.
   const categoriasIniciales = [
-  { id_tipo_activo: 1, categoria: "Computadoras", habilitado: true },
-  { id_tipo_activo: 2, categoria: "Laptops", habilitado: true },
-  { id_tipo_activo: 3, categoria: "Impresoras", habilitado: true },
-  { id_tipo_activo: 4, categoria: "Monitores", habilitado: true },
-  { id_tipo_activo: 5, categoria: "Escáneres", habilitado: true },
-  { id_tipo_activo: 6, categoria: "Dispositivos móviles", habilitado: true },
-  { id_tipo_activo: 7, categoria: "Equipos de red", habilitado: true },
-  { id_tipo_activo: 8, categoria: "Software y licenciamiento", habilitado: true },
-  { id_tipo_activo: 9, categoria: "Refacciones y accesorios", habilitado: true },
-  { id_tipo_activo: 10, categoria: "Tablets", habilitado: true },
-];
-const [categorias, setCategorias] = useState(categoriasIniciales);
+    { id_tipo_activo: 1, categoria: "Computadoras", habilitado: true },
+    { id_tipo_activo: 2, categoria: "Laptops", habilitado: true },
+    { id_tipo_activo: 3, categoria: "Impresoras", habilitado: true },
+    { id_tipo_activo: 4, categoria: "Monitores", habilitado: true },
+    { id_tipo_activo: 5, categoria: "Escáneres", habilitado: true },
+    { id_tipo_activo: 6, categoria: "Dispositivos móviles", habilitado: true },
+    { id_tipo_activo: 7, categoria: "Equipos de red", habilitado: true },
+    { id_tipo_activo: 8, categoria: "Software y licenciamiento", habilitado: true },
+    { id_tipo_activo: 9, categoria: "Refacciones y accesorios", habilitado: true },
+    { id_tipo_activo: 10, categoria: "Tablets", habilitado: true },
+  ];
+
+  const [categorias, setCategorias] = useState(categoriasIniciales);
 
   // Indicadores del inventario.
   const totalEquipos = equipos.length;
@@ -49,14 +55,16 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
     currency: "MXN",
   });
 
-  // Nombre de la pantalla actual.
+  // Nombre de cada pantalla.
   const nombresVistas = {
     inicio: "Panel principal",
     inventario: "Inventario de activos",
     categorias: "Categorías",
     asignaciones: "Control de asignaciones",
+    softwareLicencias: "Software y licencias",
     kardex: "Historial de movimientos",
     mantenimiento: "Control de mantenimiento",
+    incidencias: "Control de incidencias",
     reportes: "Reportes",
     configuracion: "Configuración",
   };
@@ -66,6 +74,7 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
 
       {/* MENÚ LATERAL */}
       <aside className="home-sidebar">
+
         <div className="sidebar-brand">
           <div className="home-logo">Z</div>
           <h2>SIGET-ZI</h2>
@@ -75,7 +84,7 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
 
         <nav className="sidebar-menu">
 
-          {/* Inicio */}
+          {/* INICIO */}
           <a
             href="#inicio"
             className={vista === "inicio" ? "active" : ""}
@@ -87,7 +96,7 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
             <span>⌂</span> Inicio
           </a>
 
-          {/* Inventario */}
+          {/* INVENTARIO */}
           <a
             href="#inventario"
             className={vista === "inventario" ? "active" : ""}
@@ -99,7 +108,7 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
             <span>▣</span> Inventario
           </a>
 
-          {/* Categorías */}
+          {/* CATEGORÍAS */}
           <a
             href="#categorias"
             className={vista === "categorias" ? "active" : ""}
@@ -111,7 +120,7 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
             <span>▦</span> Categorías
           </a>
 
-          {/* Asignaciones */}
+          {/* ASIGNACIONES DE ACTIVOS A COLABORADORES */}
           <a
             href="#asignaciones"
             className={vista === "asignaciones" ? "active" : ""}
@@ -123,7 +132,19 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
             <span>♙</span> Asignaciones
           </a>
 
-          {/* Kardex */}
+          {/* SOFTWARE Y LICENCIAS */}
+          <a
+            href="#softwareLicencias"
+            className={vista === "softwareLicencias" ? "active" : ""}
+            onClick={(e) => {
+              e.preventDefault();
+              setVista("softwareLicencias");
+            }}
+          >
+            <span>▧</span> Software y licencias
+          </a>
+
+          {/* KARDEX */}
           <a
             href="#kardex"
             className={vista === "kardex" ? "active" : ""}
@@ -135,7 +156,7 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
             <span>▤</span> Kardex
           </a>
 
-          {/* Mantenimiento */}
+          {/* MANTENIMIENTO */}
           <a
             href="#mantenimiento"
             className={vista === "mantenimiento" ? "active" : ""}
@@ -147,7 +168,19 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
             <span>⚙</span> Mantenimiento
           </a>
 
-          {/* Reportes */}
+          {/* INCIDENCIAS */}
+          <a
+            href="#incidencias"
+            className={vista === "incidencias" ? "active" : ""}
+            onClick={(e) => {
+              e.preventDefault();
+              setVista("incidencias");
+            }}
+          >
+            <span>⚠</span> Incidencias
+          </a>
+
+          {/* REPORTES */}
           <a
             href="#reportes"
             className={vista === "reportes" ? "active" : ""}
@@ -159,7 +192,7 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
             <span>▤</span> Reportes
           </a>
 
-          {/* Configuración */}
+          {/* CONFIGURACIÓN */}
           <a
             href="#configuracion"
             className={vista === "configuracion" ? "active" : ""}
@@ -176,6 +209,7 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
         <button className="logout-button" onClick={onLogout}>
           <span>↪</span> Cerrar sesión
         </button>
+
       </aside>
 
       {/* CONTENIDO PRINCIPAL */}
@@ -183,6 +217,7 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
 
         {/* ENCABEZADO */}
         <header className="home-header">
+
           <div>
             <p className="breadcrumb">
               SIGET-ZI / {nombresVistas[vista] || "Inicio"}
@@ -207,10 +242,12 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
               <small>Usuario del sistema</small>
             </div>
           </div>
+
         </header>
 
         {/* PANTALLA DE INVENTARIO */}
         {vista === "inventario" ? (
+
           <Activos
             equipos={equipos}
             setEquipos={setEquipos}
@@ -219,13 +256,15 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
 
         /* PANTALLA DE CATEGORÍAS */
         ) : vista === "categorias" ? (
+
           <Categorias
-          categorias={categorias}
-          setCategorias={setCategorias}
+            categorias={categorias}
+            setCategorias={setCategorias}
           />
 
-        /* PANTALLA DE ASIGNACIONES */
+        /* ASIGNACIÓN DE ACTIVOS A COLABORADORES */
         ) : vista === "asignaciones" ? (
+
           <Asignaciones
             equipos={equipos}
             setEquipos={setEquipos}
@@ -235,27 +274,45 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
             setMovimientosKardex={setMovimientosKardex}
           />
 
+        /* SOFTWARE Y LICENCIAS */
+        ) : vista === "softwareLicencias" ? (
+
+          <SoftwareLicencias />
+
         /* PANTALLA DE KARDEX */
         ) : vista === "kardex" ? (
+
           <Kardex
             equipos={equipos}
             asignaciones={asignaciones}
             movimientosKardex={movimientosKardex}
             mantenimientos={mantenimientos}
+            incidencias={incidencias}
           />
 
         /* PANTALLA DE MANTENIMIENTO */
-       ) : vista === "mantenimiento" ? (
-        <Mantenimiento
-         equipos={equipos}
-        setEquipos={setEquipos}
-         mantenimientos={mantenimientos}
-         setMantenimientos={setMantenimientos}
-        setMovimientosKardex={setMovimientosKardex}
-        />  
+        ) : vista === "mantenimiento" ? (
+
+          <Mantenimiento
+            equipos={equipos}
+            setEquipos={setEquipos}
+            mantenimientos={mantenimientos}
+            setMantenimientos={setMantenimientos}
+            setMovimientosKardex={setMovimientosKardex}
+          />
+
+        /* PANTALLA DE INCIDENCIAS */
+        ) : vista === "incidencias" ? (
+
+          <Incidencias
+            equipos={equipos}
+            incidencias={incidencias}
+            setIncidencias={setIncidencias}
+          />
 
         /* PANTALLA DE REPORTES */
         ) : vista === "reportes" ? (
+
           <div className="welcome-card">
             <h2>Módulo de reportes</h2>
             <p>
@@ -265,6 +322,7 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
 
         /* PANTALLA DE CONFIGURACIÓN */
         ) : vista === "configuracion" ? (
+
           <div className="welcome-card">
             <h2>Configuración</h2>
             <p>
@@ -274,9 +332,11 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
 
         /* PANTALLA DE INICIO */
         ) : (
+
           <>
             {/* BIENVENIDA */}
             <div className="welcome-card">
+
               <span className="welcome-label">
                 ZERMAT INTERNACIONAL · TECNOLOGÍAS DE LA INFORMACIÓN
               </span>
@@ -287,6 +347,7 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
                 Administra y consulta la información de los equipos
                 tecnológicos desde un solo lugar.
               </p>
+
             </div>
 
             {/* INDICADORES */}
@@ -380,7 +441,9 @@ const [categorias, setCategorias] = useState(categoriasIniciales);
             <footer className="home-footer">
               SIGET-ZI · Sistema de Gestión de Equipamiento Tecnológico
             </footer>
+
           </>
+
         )}
 
       </section>

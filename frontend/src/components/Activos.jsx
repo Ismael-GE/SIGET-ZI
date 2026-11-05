@@ -10,14 +10,73 @@ const formularioInicial = {
   numero_serie: "",
   marca: "",
   modelo: "",
+
+  // Computadoras y dispositivos móviles
+  sistema_operativo: "",
+  procesador: "",
+  memoria_ram: "",
+  almacenamiento: "",
+  direccion_ip: "",
+  direccion_mac: "",
+
+  // Monitores
+  tamano_pantalla: "",
+  resolucion: "",
+
+  // Escáneres
+  resolucion_escaneo: "",
+  velocidad_escaneo: "",
+  tipo_conexion: "",
+  alimentador_automatico: "",
+  escaneo_duplex: "",
+
+  // Impresoras
+  consumible: "",
+  tipo_impresion: "",
+  color: "",
+
+  // Dispositivos móviles
+  imei: "",
+  numero_telefonico: "",
+  conectividad_movil: "",
+
+  // Equipos de red
+  tipo_dispositivo_red: "",
+  numero_puertos: "",
+  velocidad_puertos: "",
+  tipo_conexion_red: "",
+  estandar_wifi: "",
+  firmware: "",
+
+  // Software y licenciamiento
+  tipo_software: "",
+  nombre_software: "",
+  fabricante_software: "",
+  version_software: "",
+  tipo_licencia: "",
+  clave_licencia: "",
+  cantidad_licencias: "",
+  licencias_asignadas: "",
+  fecha_activacion: "",
+  fecha_vencimiento: "",
+  estado_licencia: "",
+
+  // Adquisición
   fecha_adquisicion: "",
   costo_adquisicion: "",
   moneda: "MXN",
   numero_factura: "",
   numero_orden_compra: "",
+
+  // Baja
   fecha_baja: "",
   motivo_baja: "",
   observaciones: "",
+
+  // Ubicación
+  id_sede: "",
+  id_departamento: "",
+  id_ubicacion: "",
 };
 
 function Activos({ equipos = [], setEquipos, categorias = [] }) {
@@ -74,9 +133,69 @@ function Activos({ equipos = [], setEquipos, categorias = [] }) {
     setActivoEditando(null);
   };
 
-  // Capturar cambios.
+  // Capturar cambios del formulario.
   const manejarCambio = (e) => {
     const { name, value } = e.target;
+
+    // Si cambia el tipo de activo, limpiar características técnicas.
+    if (name === "id_tipo_activo") {
+      setFormulario((anterior) => ({
+        ...anterior,
+        id_tipo_activo: value,
+
+        // Computadoras
+        sistema_operativo: "",
+        procesador: "",
+        memoria_ram: "",
+        almacenamiento: "",
+        direccion_ip: "",
+        direccion_mac: "",
+
+        // Monitores
+        tamano_pantalla: "",
+        resolucion: "",
+
+        // Escáneres
+        resolucion_escaneo: "",
+        velocidad_escaneo: "",
+        tipo_conexion: "",
+        alimentador_automatico: "",
+        escaneo_duplex: "",
+
+        // Impresoras
+        consumible: "",
+        tipo_impresion: "",
+        color: "",
+
+        // Dispositivos móviles
+        imei: "",
+        numero_telefonico: "",
+        conectividad_movil: "",
+
+        // Equipos de red
+        tipo_dispositivo_red: "",
+        numero_puertos: "",
+        velocidad_puertos: "",
+        tipo_conexion_red: "",
+        estandar_wifi: "",
+        firmware: "",
+
+        // Software y licenciamiento
+        tipo_software: "",
+        nombre_software: "",
+        fabricante_software: "",
+        version_software: "",
+        tipo_licencia: "",
+        clave_licencia: "",
+        cantidad_licencias: "",
+        licencias_asignadas: "",
+        fecha_activacion: "",
+        fecha_vencimiento: "",
+        estado_licencia: "",
+      }));
+
+      return;
+    }
 
     setFormulario((anterior) => ({
       ...anterior,
@@ -88,12 +207,59 @@ function Activos({ equipos = [], setEquipos, categorias = [] }) {
   const obtenerNombreCategoria = (activo) => {
     const categoria = categorias.find(
       (item) =>
-        String(item.id_tipo_activo) ===
-        String(activo.id_tipo_activo)
+        String(item.id_tipo_activo) === String(activo.id_tipo_activo)
     );
 
     return categoria?.categoria || activo.tipo_activo || "Sin categoría";
   };
+
+  // Identificar la categoría seleccionada.
+  const categoriaSeleccionada = categorias.find(
+    (categoria) =>
+      String(categoria.id_tipo_activo) ===
+      String(formulario.id_tipo_activo)
+  );
+
+  const nombreCategoriaSeleccionada =
+    categoriaSeleccionada?.categoria?.toLowerCase() || "";
+
+  const nombreCategoriaNormalizado =
+    nombreCategoriaSeleccionada.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  // Identificar computadoras.
+  const esComputadora =
+    nombreCategoriaNormalizado.includes("computadora") ||
+    nombreCategoriaNormalizado.includes("computo") ||
+    nombreCategoriaNormalizado.includes("laptop");
+
+  // Identificar impresoras.
+  const esImpresora =
+    nombreCategoriaNormalizado.includes("impresora");
+
+  // Identificar monitores.
+  const esMonitor =
+    nombreCategoriaNormalizado.includes("monitor");
+
+  // Identificar escáneres.
+  const esEscaner =
+    nombreCategoriaNormalizado.includes("escaner");
+
+  // Identificar dispositivos móviles.
+  const esDispositivoMovil =
+    nombreCategoriaNormalizado.includes("movil") ||
+    nombreCategoriaNormalizado.includes("celular") ||
+    nombreCategoriaNormalizado.includes("smartphone") ||
+    nombreCategoriaNormalizado.includes("tablet");
+
+  // Identificar equipos de red.
+  const esEquipoRed =
+    nombreCategoriaNormalizado.includes("red") ||
+    nombreCategoriaNormalizado.includes("network");
+
+  // Identificar software y licenciamiento.
+  const esSoftware =
+    nombreCategoriaNormalizado.includes("software") ||
+    nombreCategoriaNormalizado.includes("licencia");
 
   // Registrar o actualizar activo.
   const guardarActivo = (e) => {
@@ -150,14 +316,45 @@ function Activos({ equipos = [], setEquipos, categorias = [] }) {
       return;
     }
 
+    // Validar cantidades de licencias.
+    const cantidadLicencias = Number(formulario.cantidad_licencias);
+    const licenciasAsignadas = Number(formulario.licencias_asignadas);
+
+    if (
+      formulario.cantidad_licencias !== "" &&
+      (!Number.isInteger(cantidadLicencias) || cantidadLicencias < 0)
+    ) {
+      mostrarMensaje("La cantidad de licencias debe ser un número entero válido.");
+      return;
+    }
+
+    if (
+      formulario.licencias_asignadas !== "" &&
+      (!Number.isInteger(licenciasAsignadas) || licenciasAsignadas < 0)
+    ) {
+      mostrarMensaje("Las licencias asignadas deben ser un número entero válido.");
+      return;
+    }
+
+    if (
+      formulario.cantidad_licencias !== "" &&
+      formulario.licencias_asignadas !== "" &&
+      licenciasAsignadas > cantidadLicencias
+    ) {
+      mostrarMensaje(
+        "Las licencias asignadas no pueden superar la cantidad disponible."
+      );
+      return;
+    }
+
     // Buscar categoría seleccionada.
-    const categoriaSeleccionada = categorias.find(
+    const categoriaActual = categorias.find(
       (categoria) =>
         String(categoria.id_tipo_activo) ===
         String(formulario.id_tipo_activo)
     );
 
-    if (!categoriaSeleccionada || !categoriaSeleccionada.habilitado) {
+    if (!categoriaActual || !categoriaActual.habilitado) {
       mostrarMensaje("Selecciona una categoría habilitada.");
       return;
     }
@@ -174,7 +371,7 @@ function Activos({ equipos = [], setEquipos, categorias = [] }) {
         formulario.costo_adquisicion === ""
           ? ""
           : Number(formulario.costo_adquisicion),
-      tipo_activo: categoriaSeleccionada.categoria,
+      tipo_activo: categoriaActual.categoria,
       estado_activo: formulario.id_estado_activo,
     };
 
@@ -369,11 +566,12 @@ function Activos({ equipos = [], setEquipos, categorias = [] }) {
                 className="btn-cerrar-modal"
                 onClick={cerrarFormulario}
               >
-                ×
+                X
               </button>
             </div>
 
             <form onSubmit={guardarActivo}>
+              {/* INFORMACIÓN GENERAL */}
               <div className="formulario-seccion">
                 <h3>Información general</h3>
 
@@ -477,6 +675,626 @@ function Activos({ equipos = [], setEquipos, categorias = [] }) {
                 </div>
               </div>
 
+              {/* UBICACIÓN DEL ACTIVO */}
+              <div className="formulario-seccion">
+                <h3>Ubicación del activo</h3>
+
+                <div className="formulario-grid">
+                  <div className="campo-formulario">
+                    <label>Sede</label>
+                    <input
+                      type="text"
+                      name="id_sede"
+                      value={formulario.id_sede}
+                      onChange={manejarCambio}
+                      placeholder="Ej. Corporativo"
+                    />
+                  </div>
+
+                  <div className="campo-formulario">
+                    <label>Departamento</label>
+                    <input
+                      type="text"
+                      name="id_departamento"
+                      value={formulario.id_departamento}
+                      onChange={manejarCambio}
+                      placeholder="Ej. Tecnologías de la Información"
+                    />
+                  </div>
+
+                  <div className="campo-formulario">
+                    <label>Ubicación específica</label>
+                    <input
+                      type="text"
+                      name="id_ubicacion"
+                      value={formulario.id_ubicacion}
+                      onChange={manejarCambio}
+                      placeholder="Ej. Oficina de soporte técnico"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* COMPUTADORAS Y LAPTOPS */}
+              {esComputadora && (
+                <div className="formulario-seccion">
+                  <h3>Características técnicas del equipo</h3>
+
+                  <div className="formulario-grid">
+                    <div className="campo-formulario">
+                      <label>Sistema operativo</label>
+                      <input
+                        type="text"
+                        name="sistema_operativo"
+                        value={formulario.sistema_operativo}
+                        onChange={manejarCambio}
+                        placeholder="Ej. Windows 11 Pro"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Procesador</label>
+                      <input
+                        type="text"
+                        name="procesador"
+                        value={formulario.procesador}
+                        onChange={manejarCambio}
+                        placeholder="Ej. Intel Core i5"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Memoria RAM</label>
+                      <input
+                        type="text"
+                        name="memoria_ram"
+                        value={formulario.memoria_ram}
+                        onChange={manejarCambio}
+                        placeholder="Ej. 16 GB"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Almacenamiento</label>
+                      <input
+                        type="text"
+                        name="almacenamiento"
+                        value={formulario.almacenamiento}
+                        onChange={manejarCambio}
+                        placeholder="Ej. SSD 512 GB"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Dirección IP</label>
+                      <input
+                        type="text"
+                        name="direccion_ip"
+                        value={formulario.direccion_ip}
+                        onChange={manejarCambio}
+                        placeholder="Ej. 192.168.1.100"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Dirección MAC</label>
+                      <input
+                        type="text"
+                        name="direccion_mac"
+                        value={formulario.direccion_mac}
+                        onChange={manejarCambio}
+                        placeholder="Dirección MAC del equipo"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* IMPRESORAS */}
+              {esImpresora && (
+                <div className="formulario-seccion">
+                  <h3>Características de la impresora</h3>
+
+                  <div className="formulario-grid">
+                    <div className="campo-formulario">
+                      <label>Dirección IP</label>
+                      <input
+                        type="text"
+                        name="direccion_ip"
+                        value={formulario.direccion_ip}
+                        onChange={manejarCambio}
+                        placeholder="Ej. 192.168.1.100"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Consumible</label>
+                      <input
+                        type="text"
+                        name="consumible"
+                        value={formulario.consumible}
+                        onChange={manejarCambio}
+                        placeholder="Ej. Tóner HP 58A"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Tipo de impresión</label>
+                      <select
+                        name="tipo_impresion"
+                        value={formulario.tipo_impresion}
+                        onChange={manejarCambio}
+                      >
+                        <option value="">Selecciona una opción</option>
+                        <option value="Láser">Láser</option>
+                        <option value="Inyección de tinta">Inyección de tinta</option>
+                        <option value="Térmica">Térmica</option>
+                        <option value="Matriz de puntos">Matriz de puntos</option>
+                      </select>
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Color de impresión</label>
+                      <select
+                        name="color"
+                        value={formulario.color}
+                        onChange={manejarCambio}
+                      >
+                        <option value="">Selecciona una opción</option>
+                        <option value="Color">Color</option>
+                        <option value="Blanco y negro">Blanco y negro</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* MONITORES */}
+              {esMonitor && (
+                <div className="formulario-seccion">
+                  <h3>Características del monitor</h3>
+
+                  <div className="formulario-grid">
+                    <div className="campo-formulario">
+                      <label>Tamaño de pantalla</label>
+                      <input
+                        type="text"
+                        name="tamano_pantalla"
+                        value={formulario.tamano_pantalla}
+                        onChange={manejarCambio}
+                        placeholder="Ej. 24 pulgadas"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Resolución</label>
+                      <input
+                        type="text"
+                        name="resolucion"
+                        value={formulario.resolucion}
+                        onChange={manejarCambio}
+                        placeholder="Ej. 1920 x 1080"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ESCÁNERES */}
+              {esEscaner && (
+                <div className="formulario-seccion">
+                  <h3>Características del escáner</h3>
+
+                  <div className="formulario-grid">
+                    <div className="campo-formulario">
+                      <label>Resolución de escaneo</label>
+                      <input
+                        type="text"
+                        name="resolucion_escaneo"
+                        value={formulario.resolucion_escaneo}
+                        onChange={manejarCambio}
+                        placeholder="Ej. 600 x 600 dpi"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Velocidad de escaneo</label>
+                      <input
+                        type="text"
+                        name="velocidad_escaneo"
+                        value={formulario.velocidad_escaneo}
+                        onChange={manejarCambio}
+                        placeholder="Ej. 30 páginas por minuto"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Tipo de conexión</label>
+                      <select
+                        name="tipo_conexion"
+                        value={formulario.tipo_conexion}
+                        onChange={manejarCambio}
+                      >
+                        <option value="">Selecciona una opción</option>
+                        <option value="USB">USB</option>
+                        <option value="Ethernet">Ethernet</option>
+                        <option value="Wi-Fi">Wi-Fi</option>
+                        <option value="USB y Wi-Fi">USB y Wi-Fi</option>
+                      </select>
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Alimentador automático (ADF)</label>
+                      <select
+                        name="alimentador_automatico"
+                        value={formulario.alimentador_automatico}
+                        onChange={manejarCambio}
+                      >
+                        <option value="">Selecciona una opción</option>
+                        <option value="Sí">Sí</option>
+                        <option value="No">No</option>
+                      </select>
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Escaneo dúplex (doble cara)</label>
+                      <select
+                        name="escaneo_duplex"
+                        value={formulario.escaneo_duplex}
+                        onChange={manejarCambio}
+                      >
+                        <option value="">Selecciona una opción</option>
+                        <option value="Sí">Sí</option>
+                        <option value="No">No</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* DISPOSITIVOS MÓVILES */}
+              {esDispositivoMovil && (
+                <div className="formulario-seccion">
+                  <h3>Características del dispositivo móvil</h3>
+
+                  <div className="formulario-grid">
+                    <div className="campo-formulario">
+                      <label>Sistema operativo</label>
+                      <input
+                        type="text"
+                        name="sistema_operativo"
+                        value={formulario.sistema_operativo}
+                        onChange={manejarCambio}
+                        placeholder="Ej. Android 15 o iOS 18"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Memoria RAM</label>
+                      <input
+                        type="text"
+                        name="memoria_ram"
+                        value={formulario.memoria_ram}
+                        onChange={manejarCambio}
+                        placeholder="Ej. 8 GB"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Almacenamiento</label>
+                      <input
+                        type="text"
+                        name="almacenamiento"
+                        value={formulario.almacenamiento}
+                        onChange={manejarCambio}
+                        placeholder="Ej. 128 GB"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>IMEI</label>
+                      <input
+                        type="text"
+                        name="imei"
+                        value={formulario.imei}
+                        onChange={manejarCambio}
+                        placeholder="Número IMEI del dispositivo"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Número telefónico</label>
+                      <input
+                        type="tel"
+                        name="numero_telefonico"
+                        value={formulario.numero_telefonico}
+                        onChange={manejarCambio}
+                        placeholder="Número de la línea asignada"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Conectividad móvil</label>
+                      <select
+                        name="conectividad_movil"
+                        value={formulario.conectividad_movil}
+                        onChange={manejarCambio}
+                      >
+                        <option value="">Selecciona una opción</option>
+                        <option value="Wi-Fi">Wi-Fi</option>
+                        <option value="4G">4G</option>
+                        <option value="5G">5G</option>
+                        <option value="Wi-Fi y 4G">Wi-Fi y 4G</option>
+                        <option value="Wi-Fi y 5G">Wi-Fi y 5G</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* EQUIPOS DE RED */}
+              {esEquipoRed && (
+                <div className="formulario-seccion">
+                  <h3>Características técnicas del equipo de red</h3>
+
+                  <div className="formulario-grid">
+                    <div className="campo-formulario">
+                      <label>Tipo de dispositivo</label>
+                      <select
+                        name="tipo_dispositivo_red"
+                        value={formulario.tipo_dispositivo_red}
+                        onChange={manejarCambio}
+                      >
+                        <option value="">Selecciona una opción</option>
+                        <option value="Switch">Switch</option>
+                        <option value="Router">Router</option>
+                        <option value="Access Point">Access Point</option>
+                        <option value="Firewall">Firewall</option>
+                        <option value="Convertidor de medios">Convertidor de medios</option>
+                        <option value="Otro">Otro</option>
+                      </select>
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Dirección IP</label>
+                      <input
+                        type="text"
+                        name="direccion_ip"
+                        value={formulario.direccion_ip}
+                        onChange={manejarCambio}
+                        placeholder="Ej. 192.168.1.10"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Dirección MAC</label>
+                      <input
+                        type="text"
+                        name="direccion_mac"
+                        value={formulario.direccion_mac}
+                        onChange={manejarCambio}
+                        placeholder="Ej. 00:1A:2B:3C:4D:5E"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Número de puertos</label>
+                      <input
+                        type="number"
+                        name="numero_puertos"
+                        value={formulario.numero_puertos}
+                        onChange={manejarCambio}
+                        min="0"
+                        placeholder="Ej. 24"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Velocidad de puertos</label>
+                      <input
+                        type="text"
+                        name="velocidad_puertos"
+                        value={formulario.velocidad_puertos}
+                        onChange={manejarCambio}
+                        placeholder="Ej. 1 Gbps"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Tipo de conexión</label>
+                      <select
+                        name="tipo_conexion_red"
+                        value={formulario.tipo_conexion_red}
+                        onChange={manejarCambio}
+                      >
+                        <option value="">Selecciona una opción</option>
+                        <option value="Ethernet">Ethernet</option>
+                        <option value="Fibra óptica">Fibra óptica</option>
+                        <option value="Inalámbrica">Inalámbrica</option>
+                        <option value="Ethernet y fibra óptica">Ethernet y fibra óptica</option>
+                      </select>
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Estándar Wi-Fi</label>
+                      <select
+                        name="estandar_wifi"
+                        value={formulario.estandar_wifi}
+                        onChange={manejarCambio}
+                      >
+                        <option value="">No aplica / Selecciona</option>
+                        <option value="Wi-Fi 4">Wi-Fi 4</option>
+                        <option value="Wi-Fi 5">Wi-Fi 5</option>
+                        <option value="Wi-Fi 6">Wi-Fi 6</option>
+                        <option value="Wi-Fi 6E">Wi-Fi 6E</option>
+                        <option value="Wi-Fi 7">Wi-Fi 7</option>
+                      </select>
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Firmware</label>
+                      <input
+                        type="text"
+                        name="firmware"
+                        value={formulario.firmware}
+                        onChange={manejarCambio}
+                        placeholder="Ej. Versión 2.1.0"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* SOFTWARE Y LICENCIAMIENTO */}
+              {esSoftware && (
+                <div className="formulario-seccion">
+                  <h3>Información de software y licenciamiento</h3>
+
+                  <div className="formulario-grid">
+                    <div className="campo-formulario">
+                      <label>Tipo de software</label>
+                      <select
+                        name="tipo_software"
+                        value={formulario.tipo_software}
+                        onChange={manejarCambio}
+                      >
+                        <option value="">Selecciona una opción</option>
+                        <option value="Sistema operativo">Sistema operativo</option>
+                        <option value="Ofimática">Ofimática</option>
+                        <option value="Antivirus">Antivirus</option>
+                        <option value="Aplicación empresarial">Aplicación empresarial</option>
+                        <option value="Diseño y edición">Diseño y edición</option>
+                        <option value="Otro">Otro</option>
+                      </select>
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Nombre del software</label>
+                      <input
+                        type="text"
+                        name="nombre_software"
+                        value={formulario.nombre_software}
+                        onChange={manejarCambio}
+                        placeholder="Ej. Microsoft Office 2021"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Fabricante</label>
+                      <input
+                        type="text"
+                        name="fabricante_software"
+                        value={formulario.fabricante_software}
+                        onChange={manejarCambio}
+                        placeholder="Ej. Microsoft"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Versión</label>
+                      <input
+                        type="text"
+                        name="version_software"
+                        value={formulario.version_software}
+                        onChange={manejarCambio}
+                        placeholder="Ej. Office 2021"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Tipo de licencia</label>
+                      <select
+                        name="tipo_licencia"
+                        value={formulario.tipo_licencia}
+                        onChange={manejarCambio}
+                      >
+                        <option value="">Selecciona una opción</option>
+                        <option value="Perpetua">Perpetua</option>
+                        <option value="Suscripción">Suscripción</option>
+                        <option value="OEM">OEM</option>
+                        <option value="Por volumen">Por volumen</option>
+                        <option value="Gratuita">Gratuita</option>
+                        <option value="Prueba">Prueba</option>
+                      </select>
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Clave de licencia</label>
+                      <input
+                        type="text"
+                        name="clave_licencia"
+                        value={formulario.clave_licencia}
+                        onChange={manejarCambio}
+                        placeholder="Clave o identificador de licencia"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Cantidad de licencias</label>
+                      <input
+                        type="number"
+                        name="cantidad_licencias"
+                        value={formulario.cantidad_licencias}
+                        onChange={manejarCambio}
+                        min="0"
+                        step="1"
+                        placeholder="Ej. 25"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Licencias asignadas</label>
+                      <input
+                        type="number"
+                        name="licencias_asignadas"
+                        value={formulario.licencias_asignadas}
+                        onChange={manejarCambio}
+                        min="0"
+                        step="1"
+                        placeholder="Ej. 18"
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Fecha de activación</label>
+                      <input
+                        type="date"
+                        name="fecha_activacion"
+                        value={formulario.fecha_activacion}
+                        onChange={manejarCambio}
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Fecha de vencimiento</label>
+                      <input
+                        type="date"
+                        name="fecha_vencimiento"
+                        value={formulario.fecha_vencimiento}
+                        onChange={manejarCambio}
+                      />
+                    </div>
+
+                    <div className="campo-formulario">
+                      <label>Estado de la licencia</label>
+                      <select
+                        name="estado_licencia"
+                        value={formulario.estado_licencia}
+                        onChange={manejarCambio}
+                      >
+                        <option value="">Selecciona una opción</option>
+                        <option value="Activa">Activa</option>
+                        <option value="Por vencer">Por vencer</option>
+                        <option value="Vencida">Vencida</option>
+                        <option value="Suspendida">Suspendida</option>
+                        <option value="Sin activar">Sin activar</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* INFORMACIÓN DE ADQUISICIÓN */}
               <div className="formulario-seccion">
                 <h3>Información de adquisición</h3>
 
@@ -538,6 +1356,7 @@ function Activos({ equipos = [], setEquipos, categorias = [] }) {
                 </div>
               </div>
 
+              {/* INFORMACIÓN DE BAJA */}
               <div className="formulario-seccion">
                 <h3>Información de baja</h3>
 
@@ -575,6 +1394,7 @@ function Activos({ equipos = [], setEquipos, categorias = [] }) {
                 </div>
               </div>
 
+              {/* BOTONES */}
               <div className="modal-acciones">
                 <button
                   type="button"
@@ -617,55 +1437,119 @@ function Activos({ equipos = [], setEquipos, categorias = [] }) {
               </button>
             </div>
 
+            {/* INFORMACIÓN GENERAL */}
             <div className="formulario-seccion">
-              <p>
-                <strong>Inventario:</strong>{" "}
-                {activoDetalle.numero_inventario}
-              </p>
-              <p>
-                <strong>Tipo:</strong>{" "}
-                {obtenerNombreCategoria(activoDetalle)}
-              </p>
-              <p>
-                <strong>Estado:</strong>{" "}
-                {activoDetalle.estado_activo}
-              </p>
+              <h3>Información general</h3>
+
+              <p><strong>Inventario:</strong> {activoDetalle.numero_inventario}</p>
+              <p><strong>Tipo:</strong> {obtenerNombreCategoria(activoDetalle)}</p>
+              <p><strong>Estado:</strong> {activoDetalle.estado_activo}</p>
               <p><strong>Marca:</strong> {activoDetalle.marca}</p>
               <p><strong>Modelo:</strong> {activoDetalle.modelo}</p>
               <p><strong>Serie:</strong> {activoDetalle.numero_serie || "—"}</p>
-              <p>
-                <strong>Proveedor:</strong>{" "}
-                {activoDetalle.id_proveedor_adquisicion || "—"}
-              </p>
-              <p>
-                <strong>Fecha de adquisición:</strong>{" "}
-                {activoDetalle.fecha_adquisicion || "—"}
-              </p>
+              <p><strong>Proveedor:</strong> {activoDetalle.id_proveedor_adquisicion || "—"}</p>
+            </div>
+
+            {/* UBICACIÓN */}
+            <div className="formulario-seccion">
+              <h3>Ubicación del activo</h3>
+
+              <p><strong>Sede:</strong> {activoDetalle.id_sede || "—"}</p>
+              <p><strong>Departamento:</strong> {activoDetalle.id_departamento || "—"}</p>
+              <p><strong>Ubicación:</strong> {activoDetalle.id_ubicacion || "—"}</p>
+            </div>
+
+            {/* CARACTERÍSTICAS TÉCNICAS */}
+            <div className="formulario-seccion">
+              <h3>Características técnicas</h3>
+
+              {[
+                ["Sistema operativo", "sistema_operativo"],
+                ["Procesador", "procesador"],
+                ["Memoria RAM", "memoria_ram"],
+                ["Almacenamiento", "almacenamiento"],
+                ["Dirección IP", "direccion_ip"],
+                ["Dirección MAC", "direccion_mac"],
+                ["Tamaño de pantalla", "tamano_pantalla"],
+                ["Resolución", "resolucion"],
+                ["Resolución de escaneo", "resolucion_escaneo"],
+                ["Velocidad de escaneo", "velocidad_escaneo"],
+                ["Tipo de conexión", "tipo_conexion"],
+                ["Alimentador automático (ADF)", "alimentador_automatico"],
+                ["Escaneo dúplex", "escaneo_duplex"],
+                ["Consumible", "consumible"],
+                ["Tipo de impresión", "tipo_impresion"],
+                ["Color", "color"],
+                ["IMEI", "imei"],
+                ["Número telefónico", "numero_telefonico"],
+                ["Conectividad móvil", "conectividad_movil"],
+                ["Tipo de dispositivo de red", "tipo_dispositivo_red"],
+                ["Número de puertos", "numero_puertos"],
+                ["Velocidad de puertos", "velocidad_puertos"],
+                ["Tipo de conexión de red", "tipo_conexion_red"],
+                ["Estándar Wi-Fi", "estandar_wifi"],
+                ["Firmware", "firmware"],
+              ].map(([etiqueta, campo]) =>
+                activoDetalle[campo] !== "" &&
+                activoDetalle[campo] != null ? (
+                  <p key={campo}>
+                    <strong>{etiqueta}:</strong>{" "}
+                    {activoDetalle[campo]}
+                  </p>
+                ) : null
+              )}
+            </div>
+
+            {/* SOFTWARE Y LICENCIAMIENTO */}
+            <div className="formulario-seccion">
+              <h3>Software y licenciamiento</h3>
+
+              {[
+                ["Tipo de software", "tipo_software"],
+                ["Nombre del software", "nombre_software"],
+                ["Fabricante", "fabricante_software"],
+                ["Versión", "version_software"],
+                ["Tipo de licencia", "tipo_licencia"],
+                ["Clave de licencia", "clave_licencia"],
+                ["Cantidad de licencias", "cantidad_licencias"],
+                ["Licencias asignadas", "licencias_asignadas"],
+                ["Fecha de activación", "fecha_activacion"],
+                ["Fecha de vencimiento", "fecha_vencimiento"],
+                ["Estado de la licencia", "estado_licencia"],
+              ].map(([etiqueta, campo]) =>
+                activoDetalle[campo] !== "" &&
+                activoDetalle[campo] != null ? (
+                  <p key={campo}>
+                    <strong>{etiqueta}:</strong>{" "}
+                    {activoDetalle[campo]}
+                  </p>
+                ) : null
+              )}
+            </div>
+
+            {/* ADQUISICIÓN */}
+            <div className="formulario-seccion">
+              <h3>Información de adquisición</h3>
+
+              <p><strong>Fecha de adquisición:</strong> {activoDetalle.fecha_adquisicion || "—"}</p>
               <p>
                 <strong>Costo:</strong>{" "}
-                {activoDetalle.costo_adquisicion || "—"}{" "}
+                {activoDetalle.costo_adquisicion !== ""
+                  ? activoDetalle.costo_adquisicion
+                  : "—"}{" "}
                 {activoDetalle.moneda}
               </p>
-              <p>
-                <strong>Factura:</strong>{" "}
-                {activoDetalle.numero_factura || "—"}
-              </p>
-              <p>
-                <strong>Orden de compra:</strong>{" "}
-                {activoDetalle.numero_orden_compra || "—"}
-              </p>
-              <p>
-                <strong>Fecha de baja:</strong>{" "}
-                {activoDetalle.fecha_baja || "—"}
-              </p>
-              <p>
-                <strong>Motivo de baja:</strong>{" "}
-                {activoDetalle.motivo_baja || "—"}
-              </p>
-              <p>
-                <strong>Observaciones:</strong>{" "}
-                {activoDetalle.observaciones || "—"}
-              </p>
+              <p><strong>Factura:</strong> {activoDetalle.numero_factura || "—"}</p>
+              <p><strong>Orden de compra:</strong> {activoDetalle.numero_orden_compra || "—"}</p>
+            </div>
+
+            {/* BAJA Y OBSERVACIONES */}
+            <div className="formulario-seccion">
+              <h3>Información de baja</h3>
+
+              <p><strong>Fecha de baja:</strong> {activoDetalle.fecha_baja || "—"}</p>
+              <p><strong>Motivo de baja:</strong> {activoDetalle.motivo_baja || "—"}</p>
+              <p><strong>Observaciones:</strong> {activoDetalle.observaciones || "—"}</p>
             </div>
 
             <div className="modal-acciones">
@@ -681,7 +1565,7 @@ function Activos({ equipos = [], setEquipos, categorias = [] }) {
         </div>
       )}
 
-      {/* AVISOS CENTRADOS */}
+      {/* AVISOS */}
       {mostrarAviso && (
         <div className="aviso-fondo">
           <div

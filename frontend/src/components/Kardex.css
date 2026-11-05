@@ -74,7 +74,7 @@
 
 .kardex-tabla td {
   padding: 15px 14px;
-  color: #526176;
+  color: #625276;
   font-size: 13px;
   border-bottom: 1px solid #edf0f5;
   vertical-align: middle;
@@ -322,4 +322,20 @@
   .kardex-resumen {
     grid-template-columns: 1fr;
   }
+}
+/* Mejorar contraste de los datos del Kardex */
+.kardex-container strong,
+.kardex-container span,
+.kardex-container p,
+.kardex-container label {
+  color: #1e293b !important;
+}
+
+/* Texto dentro de las tarjetas de información */
+.kardex-container div {
+  /* No modificar fondos ni distribución */
+}
+
+.kardex-container strong {
+  font-weight: 700;
 }
