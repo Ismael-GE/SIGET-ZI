@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import "./Home.css";
 
@@ -17,6 +16,8 @@ function Home({ usuario, onLogout }) {
   // Estados generales del sistema.
   const [equipos, setEquipos] = useState([]);
   const [asignaciones, setAsignaciones] = useState([]);
+  // Asignaciones de software a usuarios y equipos.
+  const [asignacionesSoftware, setAsignacionesSoftware] = useState([]);
   const [movimientosKardex, setMovimientosKardex] = useState([]);
   const [mantenimientos, setMantenimientos] = useState([]);
   const [incidencias, setIncidencias] = useState([]);
@@ -252,7 +253,8 @@ function Home({ usuario, onLogout }) {
             equipos={equipos}
             setEquipos={setEquipos}
             categorias={categorias}
-          />
+            asignacionesSoftware={asignacionesSoftware}
+            />
 
         /* PANTALLA DE CATEGORÍAS */
         ) : vista === "categorias" ? (
@@ -273,11 +275,15 @@ function Home({ usuario, onLogout }) {
             movimientosKardex={movimientosKardex}
             setMovimientosKardex={setMovimientosKardex}
           />
-
-        /* SOFTWARE Y LICENCIAS */
-        ) : vista === "softwareLicencias" ? (
-
-          <SoftwareLicencias />
+          /* SOFTWARE Y LICENCIAS */
+          ) : vista === "softwareLicencias" ? (
+          <SoftwareLicencias
+          equipos={equipos}
+          categorias={categorias}
+          asignacionesSoftware={asignacionesSoftware}
+          setAsignacionesSoftware={setAsignacionesSoftware}
+          setMovimientosKardex={setMovimientosKardex}
+          />
 
         /* PANTALLA DE KARDEX */
         ) : vista === "kardex" ? (

@@ -19,10 +19,11 @@ function Kardex({
   // 1. FUNCIONES PARA OBTENER Y NORMALIZAR INFORMACIÓN
   // --------------------------------------------------
 
-  const obtenerNumeroInventario = (dato) =>
-    dato?.numero_inventario ||
-    dato?.numeroInventario ||
-    "";
+const obtenerNumeroInventario = (dato) =>
+  dato?.equipoNumeroInventario ||
+  dato?.numero_inventario ||
+  dato?.numeroInventario ||
+  "";
 
   const obtenerIdActivo = (dato) =>
     dato?.id_activo ??
@@ -85,34 +86,39 @@ function Kardex({
       activo?.marca || "Sin marca"
     } ${activo?.modelo || ""}`.trim();
 
-  // Relaciona registros por ID o por número de inventario.
   const perteneceAlActivo = (registro, activo) => {
-    if (!registro || !activo) return false;
+  if (!registro || !activo) return false;
 
-    const idRegistro = obtenerIdActivo(registro);
-    const idActivo = obtenerIdActivo(activo);
+  const idActivo = activo.id;
 
-    if (
-      idRegistro !== null &&
-      idRegistro !== undefined &&
-      idActivo !== null &&
-      idActivo !== undefined &&
-      String(idRegistro) === String(idActivo)
-    ) {
-      return true;
-    }
+  // Relación directa con el activo.
+  const coincideActivo =
+    registro.id_activo != null &&
+    String(registro.id_activo) === String(idActivo);
 
-    const numeroRegistro = obtenerNumeroInventario(registro);
-    const numeroActivo = obtenerNumeroInventario(activo);
+  // Relación con el equipo al que se asignó el software.
+  const coincideEquipo =
+    registro.equipoId != null &&
+    String(registro.equipoId) === String(idActivo);
 
-    return Boolean(
-      numeroRegistro &&
-      numeroActivo &&
-      String(numeroRegistro).toLowerCase() ===
-        String(numeroActivo).toLowerCase()
-    );
-  };
+  if (coincideActivo || coincideEquipo) {
+    return true;
+  }
 
+  // Comparar números de inventario.
+  const numerosRegistro = [
+    registro.numeroInventario,
+    registro.equipoNumeroInventario,
+  ].filter(Boolean);
+
+  const numeroActivo = obtenerNumeroInventario(activo);
+
+  return numerosRegistro.some(
+    (numero) =>
+      String(numero).toLowerCase() ===
+      String(numeroActivo).toLowerCase()
+  );
+};
   // Obtener asignaciones del activo.
   const obtenerAsignaciones = (activo) =>
     asignaciones

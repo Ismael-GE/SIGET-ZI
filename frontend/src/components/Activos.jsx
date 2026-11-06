@@ -79,7 +79,7 @@ const formularioInicial = {
   id_ubicacion: "",
 };
 
-function Activos({ equipos = [], setEquipos, categorias = [] }) {
+function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware = [],}) {
   const [formulario, setFormulario] = useState(formularioInicial);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarAviso, setMostrarAviso] = useState(false);
@@ -1293,149 +1293,148 @@ function Activos({ equipos = [], setEquipos, categorias = [] }) {
                   </div>
                 </div>
               )}
+                  {/* INFORMACIÓN DE ADQUISICIÓN */}
+                                    <div className="formulario-seccion">
+                                      <h3>Información de adquisición</h3>
 
-              {/* INFORMACIÓN DE ADQUISICIÓN */}
-              <div className="formulario-seccion">
-                <h3>Información de adquisición</h3>
+                                      <div className="formulario-grid">
+                                        <div className="campo-formulario">
+                                          <label>Fecha de adquisición</label>
+                                          <input
+                                            type="date"
+                                            name="fecha_adquisicion"
+                                            value={formulario.fecha_adquisicion}
+                                            onChange={manejarCambio}
+                                          />
+                                        </div>
 
-                <div className="formulario-grid">
-                  <div className="campo-formulario">
-                    <label>Fecha de adquisición</label>
-                    <input
-                      type="date"
-                      name="fecha_adquisicion"
-                      value={formulario.fecha_adquisicion}
-                      onChange={manejarCambio}
-                    />
-                  </div>
+                                        <div className="campo-formulario">
+                                          <label>Costo de adquisición</label>
+                                          <input
+                                            type="number"
+                                            name="costo_adquisicion"
+                                            value={formulario.costo_adquisicion}
+                                            onChange={manejarCambio}
+                                            min="0"
+                                            step="0.01"
+                                            placeholder="0.00"
+                                          />
+                                        </div>
 
-                  <div className="campo-formulario">
-                    <label>Costo de adquisición</label>
-                    <input
-                      type="number"
-                      name="costo_adquisicion"
-                      value={formulario.costo_adquisicion}
-                      onChange={manejarCambio}
-                      min="0"
-                      step="0.01"
-                      placeholder="0.00"
-                    />
-                  </div>
+                                        <div className="campo-formulario">
+                                          <label>Moneda</label>
+                                          <select
+                                            name="moneda"
+                                            value={formulario.moneda}
+                                            onChange={manejarCambio}
+                                          >
+                                            <option value="MXN">MXN</option>
+                                            <option value="USD">USD</option>
+                                          </select>
+                                        </div>
 
-                  <div className="campo-formulario">
-                    <label>Moneda</label>
-                    <select
-                      name="moneda"
-                      value={formulario.moneda}
-                      onChange={manejarCambio}
-                    >
-                      <option value="MXN">MXN</option>
-                      <option value="USD">USD</option>
-                    </select>
-                  </div>
+                                        <div className="campo-formulario">
+                                          <label>Número de factura</label>
+                                          <input
+                                            type="text"
+                                            name="numero_factura"
+                                            value={formulario.numero_factura}
+                                            onChange={manejarCambio}
+                                          />
+                                        </div>
 
-                  <div className="campo-formulario">
-                    <label>Número de factura</label>
-                    <input
-                      type="text"
-                      name="numero_factura"
-                      value={formulario.numero_factura}
-                      onChange={manejarCambio}
-                    />
-                  </div>
+                                        <div className="campo-formulario">
+                                          <label>Número de orden de compra</label>
+                                          <input
+                                            type="text"
+                                            name="numero_orden_compra"
+                                            value={formulario.numero_orden_compra}
+                                            onChange={manejarCambio}
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
 
-                  <div className="campo-formulario">
-                    <label>Número de orden de compra</label>
-                    <input
-                      type="text"
-                      name="numero_orden_compra"
-                      value={formulario.numero_orden_compra}
-                      onChange={manejarCambio}
-                    />
-                  </div>
-                </div>
-              </div>
+                                    {/* INFORMACIÓN DE BAJA */}
+                                    <div className="formulario-seccion">
+                                      <h3>Información de baja</h3>
 
-              {/* INFORMACIÓN DE BAJA */}
-              <div className="formulario-seccion">
-                <h3>Información de baja</h3>
+                                      <div className="formulario-grid">
+                                        <div className="campo-formulario">
+                                          <label>Fecha de baja</label>
+                                          <input
+                                            type="date"
+                                            name="fecha_baja"
+                                            value={formulario.fecha_baja}
+                                            onChange={manejarCambio}
+                                          />
+                                        </div>
 
-                <div className="formulario-grid">
-                  <div className="campo-formulario">
-                    <label>Fecha de baja</label>
-                    <input
-                      type="date"
-                      name="fecha_baja"
-                      value={formulario.fecha_baja}
-                      onChange={manejarCambio}
-                    />
-                  </div>
+                                        <div className="campo-formulario">
+                                          <label>Motivo de baja</label>
+                                          <input
+                                            type="text"
+                                            name="motivo_baja"
+                                            value={formulario.motivo_baja}
+                                            onChange={manejarCambio}
+                                          />
+                                        </div>
 
-                  <div className="campo-formulario">
-                    <label>Motivo de baja</label>
-                    <input
-                      type="text"
-                      name="motivo_baja"
-                      value={formulario.motivo_baja}
-                      onChange={manejarCambio}
-                    />
-                  </div>
+                                        <div className="campo-formulario campo-completo">
+                                          <label>Observaciones</label>
+                                          <textarea
+                                            name="observaciones"
+                                            value={formulario.observaciones}
+                                            onChange={manejarCambio}
+                                            rows="3"
+                                            placeholder="Información adicional del activo..."
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
 
-                  <div className="campo-formulario campo-completo">
-                    <label>Observaciones</label>
-                    <textarea
-                      name="observaciones"
-                      value={formulario.observaciones}
-                      onChange={manejarCambio}
-                      rows="3"
-                      placeholder="Información adicional del activo..."
-                    />
-                  </div>
-                </div>
-              </div>
+                                    {/* BOTONES */}
+                                    <div className="modal-acciones">
+                                      <button
+                                        type="button"
+                                        className="btn-cancelar"
+                                        onClick={cerrarFormulario}
+                                      >
+                                        Cancelar
+                                      </button>
 
-              {/* BOTONES */}
-              <div className="modal-acciones">
-                <button
-                  type="button"
-                  className="btn-cancelar"
-                  onClick={cerrarFormulario}
-                >
-                  Cancelar
-                </button>
+                                      <button type="submit" className="btn-guardar">
+                                        {activoEditando !== null
+                                          ? "Guardar cambios"
+                                          : "Guardar activo"}
+                                      </button>
+                                    </div>
+                                  </form>
+                                </div>
+                              </div>
+                            )}
 
-                <button type="submit" className="btn-guardar">
-                  {activoEditando !== null
-                    ? "Guardar cambios"
-                    : "Guardar activo"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+                            {/* DETALLE DEL ACTIVO */}
+                            {activoDetalle && (
+                              <div
+                                className="modal-fondo"
+                                onClick={() => setActivoDetalle(null)}
+                              >
+                                <div
+                                  className="modal-activo"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <div className="modal-encabezado">
+                                    <h2>Detalle del activo</h2>
 
-      {/* DETALLE DEL ACTIVO */}
-      {activoDetalle && (
-        <div
-          className="modal-fondo"
-          onClick={() => setActivoDetalle(null)}
-        >
-          <div
-            className="modal-activo"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="modal-encabezado">
-              <h2>Detalle del activo</h2>
-
-              <button
-                type="button"
-                className="btn-cerrar-modal"
-                onClick={() => setActivoDetalle(null)}
-              >
-                ×
-              </button>
-            </div>
+                                    <button
+                                      type="button"
+                                      className="btn-cerrar-modal"
+                                      onClick={() => setActivoDetalle(null)}
+                                    >
+                                      X
+                                    </button>
+                                  </div>
 
             {/* INFORMACIÓN GENERAL */}
             <div className="formulario-seccion">
@@ -1503,7 +1502,6 @@ function Activos({ equipos = [], setEquipos, categorias = [] }) {
             {/* SOFTWARE Y LICENCIAMIENTO */}
             <div className="formulario-seccion">
               <h3>Software y licenciamiento</h3>
-
               {[
                 ["Tipo de software", "tipo_software"],
                 ["Nombre del software", "nombre_software"],
@@ -1526,7 +1524,55 @@ function Activos({ equipos = [], setEquipos, categorias = [] }) {
                 ) : null
               )}
             </div>
+            {/* SOFTWARE INSTALADO Y ASIGNADO */}
+<div className="formulario-seccion">
+  <h3>Software instalado y asignado</h3>
 
+  {(() => {
+    const softwareDelEquipo = asignacionesSoftware.filter(
+      (asignacion) =>
+        asignacion.destino === "Equipo" &&
+        String(asignacion.equipoId) === String(activoDetalle.id) &&
+        asignacion.estado === "Asignada"
+    );
+
+    if (softwareDelEquipo.length === 0) {
+      return (
+        <p>
+          Este equipo no tiene software ni licencias asignadas.
+        </p>
+      );
+    }
+
+    return softwareDelEquipo.map((asignacion) => (
+      <div key={asignacion.id}>
+        <p>
+          <strong>Software:</strong> {asignacion.software}
+        </p>
+
+        <p>
+          <strong>Versión:</strong> {asignacion.version}
+        </p>
+
+        <p>
+          <strong>Fecha de asignación:</strong>{" "}
+          {asignacion.fecha || "—"}
+        </p>
+
+        <p>
+          <strong>Estado:</strong> {asignacion.estado}
+        </p>
+
+        <p>
+          <strong>Observaciones:</strong>{" "}
+          {asignacion.observaciones || "—"}
+        </p>
+
+        <hr />
+      </div>
+    ));
+  })()}
+</div>
             {/* ADQUISICIÓN */}
             <div className="formulario-seccion">
               <h3>Información de adquisición</h3>
