@@ -20,6 +20,7 @@ function Home({ usuario, onLogout }) {
   const [asignacionesSoftware, setAsignacionesSoftware] = useState([]);
   const [movimientosKardex, setMovimientosKardex] = useState([]);
   const [mantenimientos, setMantenimientos] = useState([]);
+  const [gastosMantenimiento, setGastosMantenimiento] = useState([]);
   const [incidencias, setIncidencias] = useState([]);
 
   // Categorías iniciales del inventario.
@@ -48,9 +49,6 @@ function Home({ usuario, onLogout }) {
   const equiposMantenimiento = equipos.filter(
     (equipo) => equipo.estado_activo === "En mantenimiento"
   ).length;
-
-  const gastosMantenimiento = 0;
-
   const formatoMoneda = new Intl.NumberFormat("es-MX", {
     style: "currency",
     currency: "MXN",
@@ -305,6 +303,8 @@ function Home({ usuario, onLogout }) {
             mantenimientos={mantenimientos}
             setMantenimientos={setMantenimientos}
             setMovimientosKardex={setMovimientosKardex}
+            gastosMantenimiento={gastosMantenimiento}
+setGastosMantenimiento={setGastosMantenimiento}
           />
 
         /* PANTALLA DE INCIDENCIAS */
