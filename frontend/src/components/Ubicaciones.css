@@ -1,0 +1,232 @@
+
+.ubicaciones-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: #17243b;
+}
+
+.ubicaciones-encabezado,
+.ubicaciones-listado-encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+}
+
+.ubicaciones-encabezado h2,
+.ubicaciones-listado h3,
+.ubicaciones-formulario h3 {
+  margin: 0 0 7px;
+}
+
+.ubicaciones-encabezado p,
+.ubicaciones-listado-encabezado p {
+  margin: 0;
+  color: #718096;
+  font-size: 14px;
+}
+
+.ubicaciones-total {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 15px 22px;
+  min-width: 150px;
+  background: #ffffff;
+  border: 1px solid #e5eaf2;
+  border-radius: 12px;
+}
+
+.ubicaciones-total span {
+  color: #718096;
+  font-size: 12px;
+}
+
+.ubicaciones-total strong {
+  font-size: 25px;
+  color: #2858c7;
+}
+
+.ubicaciones-formulario,
+.ubicaciones-listado {
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e5eaf2;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(25, 42, 70, 0.04);
+}
+
+.ubicaciones-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.ubicaciones-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ubicaciones-campo label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #35445e;
+}
+
+.ubicaciones-campo input,
+.ubicaciones-campo select,
+.ubicaciones-campo textarea,
+.ubicaciones-busqueda {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border: 1px solid #dce3ed;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #17243b;
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.ubicaciones-campo input:focus,
+.ubicaciones-campo select:focus,
+.ubicaciones-campo textarea:focus,
+.ubicaciones-busqueda:focus {
+  border-color: #3867e8;
+  box-shadow: 0 0 0 3px rgba(56, 103, 232, 0.1);
+}
+
+.ubicaciones-campo textarea {
+  resize: vertical;
+}
+
+.ubicaciones-campo-completo {
+  grid-column: 1 / -1;
+}
+
+.ubicaciones-acciones-formulario {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.ubicaciones-btn-guardar,
+.ubicaciones-btn-cancelar,
+.ubicaciones-btn-editar,
+.ubicaciones-btn-eliminar {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ubicaciones-btn-guardar {
+  color: #ffffff;
+  background: #2858c7;
+}
+
+.ubicaciones-btn-guardar:hover {
+  background: #1e46a3;
+}
+
+.ubicaciones-btn-cancelar {
+  color: #475569;
+  background: #e9edf4;
+}
+
+.ubicaciones-listado-encabezado {
+  margin-bottom: 18px;
+}
+
+.ubicaciones-busqueda {
+  max-width: 280px;
+}
+
+.ubicaciones-tabla-contenedor {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ubicaciones-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.ubicaciones-tabla th {
+  padding: 13px 12px;
+  color: #64748b;
+  background: #f6f8fc;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ubicaciones-tabla td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.ubicaciones-estado {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.estado-activo {
+  color: #16804a;
+  background: #e6f6ed;
+}
+
+.estado-inactivo {
+  color: #a34b32;
+  background: #fff0e9;
+}
+
+.ubicaciones-acciones-tabla {
+  display: flex;
+  gap: 7px;
+}
+
+.ubicaciones-btn-editar {
+  color: #2858c7;
+  background: #eaf0ff;
+}
+
+.ubicaciones-btn-eliminar {
+  color: #b42318;
+  background: #fff0ee;
+}
+
+.ubicaciones-vacio {
+  padding: 25px !important;
+  text-align: center;
+  color: #718096;
+}
+
+@media (max-width: 700px) {
+  .ubicaciones-encabezado,
+  .ubicaciones-listado-encabezado {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .ubicaciones-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ubicaciones-campo-completo {
+    grid-column: auto;
+  }
+
+  .ubicaciones-busqueda {
+    max-width: none;
+  }
+}

@@ -1,0 +1,238 @@
+.gastos-page {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  padding: 10px 0;
+  color: #17243b;
+}
+
+.gastos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.gastos-header h2 {
+  margin: 0 0 8px;
+  font-size: 24px;
+}
+
+.gastos-header p {
+  margin: 0;
+  color: #718096;
+}
+
+.gastos-header button {
+  background: #3867e8;
+  color: white;
+  border: none;
+  border-radius: 9px;
+  padding: 12px 18px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gastos-header button:hover {
+  background: #2854c7;
+}
+
+.gastos-resumen {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.gastos-card,
+.gastos-listado {
+  background: white;
+  border: 1px solid #e5eaf2;
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 4px 14px rgba(20, 35, 63, 0.04);
+}
+
+.gastos-card span {
+  color: #718096;
+  font-size: 14px;
+}
+
+.gastos-card h3 {
+  margin: 12px 0 0;
+  font-size: 27px;
+  color: #17243b;
+}
+
+.gastos-listado h3 {
+  margin: 0 0 18px;
+}
+
+.gastos-listado p {
+  color: #718096;
+}
+
+@media (max-width: 650px) {
+  .gastos-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .gastos-resumen {
+    grid-template-columns: 1fr;
+  }
+}
+.gastos-tabla-contenedor {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.gastos-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.gastos-tabla th {
+  background: #f1f4fa;
+  color: #52627a;
+  text-align: left;
+  padding: 14px 12px;
+  font-weight: 600;
+}
+
+.gastos-tabla td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #e8edf4;
+  color: #344258;
+}
+
+.gastos-tabla tbody tr:hover {
+  background: #f8faff;
+}
+/* Fondo de la ventana modal */
+.gastos-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px;
+  z-index: 9999;
+}
+
+/* Ventana principal */
+.gastos-modal {
+  background: #ffffff;
+  width: 100%;
+  max-width: 950px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 18px;
+  padding: 30px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+/* Encabezado */
+.gastos-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  padding-bottom: 20px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #e5eaf1;
+}
+
+.gastos-modal-header h3 {
+  margin: 0 0 8px;
+  color: #17243b;
+  font-size: 23px;
+}
+
+.gastos-modal-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* Botón cerrar */
+.gastos-modal-cerrar {
+  border: none;
+  background: #f1f5f9;
+  color: #475569;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.gastos-modal-cerrar:hover {
+  background: #e2e8f0;
+}
+
+@media (max-width: 600px) {
+  .gastos-modal-overlay {
+    padding: 10px;
+  }
+
+  .gastos-modal {
+    padding: 20px;
+    max-height: 95vh;
+  }
+}
+/* Campos del formulario: diseño limpio */
+.gastos-modal input:not([type="checkbox"]),
+.gastos-modal select,
+.gastos-modal textarea {
+  width: 100%;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1px solid #dce3ed;
+  border-radius: 9px;
+  color: #17243b;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+/* Texto de ayuda */
+.gastos-modal input::placeholder,
+.gastos-modal textarea::placeholder {
+  color: #a0aaba;
+}
+
+/* Cuando seleccionas un campo */
+.gastos-modal input:focus,
+.gastos-modal select:focus,
+.gastos-modal textarea:focus {
+  background: #ffffff;
+  border-color: #3867e8;
+  box-shadow: 0 0 0 3px rgba(56, 103, 232, 0.10);
+}
+
+/* Etiquetas */
+.gastos-modal .gastos-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #344258;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Área de descripción */
+.gastos-modal textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+/* Evitar fondos grises en los campos */
+.gastos-modal input:not([type="checkbox"]):disabled,
+.gastos-modal select:disabled,
+.gastos-modal textarea:disabled {
+  background: #ffffff;
+}

@@ -86,27 +86,23 @@ const obtenerNumeroInventario = (dato) =>
       activo?.marca || "Sin marca"
     } ${activo?.modelo || ""}`.trim();
 
-  const perteneceAlActivo = (registro, activo) => {
+    const perteneceAlActivo = (registro, activo) => {
   if (!registro || !activo) return false;
 
+  const idRegistro = obtenerIdActivo(registro);
   const idActivo = activo.id;
 
-  // Relación directa con el activo.
-  const coincideActivo =
-    registro.id_activo != null &&
-    String(registro.id_activo) === String(idActivo);
-
-  // Relación con el equipo al que se asignó el software.
-  const coincideEquipo =
-    registro.equipoId != null &&
-    String(registro.equipoId) === String(idActivo);
-
-  if (coincideActivo || coincideEquipo) {
+  // Comparar el identificador del activo.
+  if (
+    idRegistro != null &&
+    String(idRegistro) === String(idActivo)
+  ) {
     return true;
   }
 
-  // Comparar números de inventario.
+  // Comparar el número de inventario.
   const numerosRegistro = [
+    registro.numero_inventario,
     registro.numeroInventario,
     registro.equipoNumeroInventario,
   ].filter(Boolean);
@@ -115,10 +111,12 @@ const obtenerNumeroInventario = (dato) =>
 
   return numerosRegistro.some(
     (numero) =>
-      String(numero).toLowerCase() ===
-      String(numeroActivo).toLowerCase()
+      String(numero).trim().toLowerCase() ===
+      String(numeroActivo).trim().toLowerCase()
   );
 };
+
+
   // Obtener asignaciones del activo.
   const obtenerAsignaciones = (activo) =>
     asignaciones
@@ -256,12 +254,10 @@ const obtenerNumeroInventario = (dato) =>
     : [];
 
   const totalMantenimientos = mantenimientosConsultados.reduce(
-    (total, mantenimiento) =>
-      total +
-      (Number(mantenimiento.costo) || 0) +
-      (Number(mantenimiento.costoFinal) || 0),
-    0
-  );
+  (total, mantenimiento) =>
+    total + (Number(mantenimiento.costoFinal) || 0),
+  0
+);
 
   // --------------------------------------------------
   // 3. GENERACIÓN DEL PDF
@@ -490,7 +486,6 @@ const obtenerNumeroInventario = (dato) =>
             registro.tecnicoResponsable || "—",
             registro.descripcion || "—",
             registro.refacciones || "—",
-            formatearMoneda(registro.costo),
             registro.estadoMantenimiento || "—",
             formatearFecha(registro.fechaFinalizacion),
             registro.trabajoRealizado || "—",
@@ -501,26 +496,23 @@ const obtenerNumeroInventario = (dato) =>
               "—",
           ]
         );
-
-        agregarSeccion(
-          "3. HISTORIAL DE MANTENIMIENTOS",
-          filasMantenimientos,
-          [
-            "Tipo",
-            "Ingreso",
-            "Técnico",
-            "Descripción",
-            "Refacciones",
-            "Costo estimado",
-            "Estado",
-            "Finalización",
-            "Trabajo realizado",
-            "Condición final",
-            "Costo final",
-            "Observaciones",
-          ]
-        );
-
+  agregarSeccion(
+    "3. HISTORIAL DE MANTENIMIENTOS",
+    filasMantenimientos,
+   [
+      "Tipo",
+      "Ingreso",
+      "Técnico",
+      "Descripción",
+      "Refacciones",
+      "Estado",
+      "Finalización",
+      "Trabajo realizado",
+      "Condición final",
+      "Costo final",
+      "Observaciones",
+      ]
+  ) ;
         // INCIDENCIAS
         const incidenciasActivo = obtenerIncidencias(activo);
 
@@ -966,7 +958,6 @@ const obtenerNumeroInventario = (dato) =>
                       <th>Descripción</th>
                       <th>Estado</th>
                       <th>Finalización</th>
-                      <th>Costo estimado</th>
                       <th>Costo final</th>
                     </tr>
                   </thead>
@@ -984,7 +975,6 @@ const obtenerNumeroInventario = (dato) =>
                         <td>
                           {formatearFecha(registro.fechaFinalizacion)}
                         </td>
-                        <td>{formatearMoneda(registro.costo)}</td>
                         <td>{formatearMoneda(registro.costoFinal)}</td>
                       </tr>
                     ))}
