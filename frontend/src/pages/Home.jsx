@@ -15,6 +15,78 @@ import Proveedores from "../components/Proveedores";
 import Colaboradores from "../components/Colaboradores";
 import Ubicaciones from "../components/Ubicaciones";
 import Usuarios from "../components/Usuarios";
+import Roles from "../components/Roles";
+
+// Módulos disponibles para configurar los permisos.
+const modulosRoles = [
+  "Inventario",
+  "Componentes",
+  "Categorías",
+  "Asignaciones",
+  "Software y licencias",
+  "Kardex",
+  "Mantenimiento",
+  "Gastos",
+  "Incidencias",
+  "Proveedores",
+  "Colaboradores",
+  "Ubicaciones",
+  "Reportes",
+  "Configuración",
+];
+
+// Acciones disponibles para cada módulo.
+const accionesRoles = ["Consultar", "Registrar", "Editar", "Eliminar"];
+
+// Genera una estructura de permisos vacía.
+const crearPermisosVacios = () =>
+  Object.fromEntries(
+    modulosRoles.map((modulo) => [modulo, []])
+  );
+
+// Roles iniciales del sistema.
+const rolesIniciales = [
+  {
+    id: 1,
+    nombre: "Administrador",
+    descripcion: "Acceso completo a los módulos del sistema.",
+    permisos: Object.fromEntries(
+      modulosRoles.map((modulo) => [
+        modulo,
+        [...accionesRoles],
+      ])
+    ),
+    protegido: true,
+  },
+  {
+    id: 2,
+    nombre: "Supervisor de TI",
+    descripcion: "Supervisión de las actividades del área de TI.",
+    permisos: crearPermisosVacios(),
+    protegido: false,
+  },
+  {
+    id: 3,
+    nombre: "Técnico de soporte",
+    descripcion: "Atención de incidencias y mantenimiento.",
+    permisos: crearPermisosVacios(),
+    protegido: false,
+  },
+  {
+    id: 4,
+    nombre: "Empleado",
+    descripcion: "Acceso básico a las funciones autorizadas.",
+    permisos: crearPermisosVacios(),
+    protegido: false,
+  },
+  {
+    id: 5,
+    nombre: "Auditor",
+    descripcion: "Consulta de información para auditoría.",
+    permisos: crearPermisosVacios(),
+    protegido: false,
+  },
+];
 
 function Home({ usuario, onLogout }) {
   // Controla qué pantalla se muestra.
@@ -33,6 +105,9 @@ function Home({ usuario, onLogout }) {
   const [colaboradores, setColaboradores] = useState([]);
   const [ubicaciones, setUbicaciones] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
+
+  // Estado centralizado de roles y permisos.
+  const [roles, setRoles] = useState(rolesIniciales);
 
   // Los departamentos se conectarán posteriormente con su catálogo.
   const [departamentos] = useState([]);
@@ -100,6 +175,7 @@ function Home({ usuario, onLogout }) {
     colaboradores: "Colaboradores",
     ubicaciones: "Ubicaciones",
     usuarios: "Administración de usuarios",
+    roles: "Administración de roles",
   };
 
   return (
@@ -114,7 +190,6 @@ function Home({ usuario, onLogout }) {
         <p className="menu-label">MENÚ PRINCIPAL</p>
 
         <nav className="sidebar-menu">
-          {/* INICIO */}
           <a
             href="#inicio"
             className={vista === "inicio" ? "active" : ""}
@@ -126,7 +201,6 @@ function Home({ usuario, onLogout }) {
             <span>⌂</span> Inicio
           </a>
 
-          {/* INVENTARIO */}
           <a
             href="#inventario"
             className={vista === "inventario" ? "active" : ""}
@@ -138,7 +212,6 @@ function Home({ usuario, onLogout }) {
             <span>▣</span> Inventario
           </a>
 
-          {/* COMPONENTES DE ACTIVOS */}
           <a
             href="#componentes"
             className={vista === "componentes" ? "active" : ""}
@@ -150,7 +223,6 @@ function Home({ usuario, onLogout }) {
             <span>▦</span> Componentes
           </a>
 
-          {/* CATEGORÍAS */}
           <a
             href="#categorias"
             className={vista === "categorias" ? "active" : ""}
@@ -162,7 +234,6 @@ function Home({ usuario, onLogout }) {
             <span>▦</span> Categorías
           </a>
 
-          {/* ASIGNACIONES */}
           <a
             href="#asignaciones"
             className={vista === "asignaciones" ? "active" : ""}
@@ -174,7 +245,6 @@ function Home({ usuario, onLogout }) {
             <span>♙</span> Asignaciones
           </a>
 
-          {/* SOFTWARE Y LICENCIAS */}
           <a
             href="#softwareLicencias"
             className={vista === "softwareLicencias" ? "active" : ""}
@@ -186,7 +256,6 @@ function Home({ usuario, onLogout }) {
             <span>▧</span> Software y licencias
           </a>
 
-          {/* KARDEX */}
           <a
             href="#kardex"
             className={vista === "kardex" ? "active" : ""}
@@ -198,7 +267,6 @@ function Home({ usuario, onLogout }) {
             <span>▤</span> Kardex
           </a>
 
-          {/* MANTENIMIENTO */}
           <a
             href="#mantenimiento"
             className={vista === "mantenimiento" ? "active" : ""}
@@ -210,7 +278,6 @@ function Home({ usuario, onLogout }) {
             <span>⚙</span> Mantenimiento
           </a>
 
-          {/* GASTOS */}
           <a
             href="#gastos"
             className={vista === "gastos" ? "active" : ""}
@@ -222,7 +289,6 @@ function Home({ usuario, onLogout }) {
             <span>$</span> Gastos
           </a>
 
-          {/* INCIDENCIAS */}
           <a
             href="#incidencias"
             className={vista === "incidencias" ? "active" : ""}
@@ -234,7 +300,6 @@ function Home({ usuario, onLogout }) {
             <span>⚠</span> Incidencias
           </a>
 
-          {/* PROVEEDORES */}
           <a
             href="#proveedores"
             className={vista === "proveedores" ? "active" : ""}
@@ -246,7 +311,6 @@ function Home({ usuario, onLogout }) {
             <span>▤</span> Proveedores
           </a>
 
-          {/* COLABORADORES */}
           <a
             href="#colaboradores"
             className={vista === "colaboradores" ? "active" : ""}
@@ -258,7 +322,6 @@ function Home({ usuario, onLogout }) {
             <span>♙</span> Colaboradores
           </a>
 
-          {/* UBICACIONES */}
           <a
             href="#ubicaciones"
             className={vista === "ubicaciones" ? "active" : ""}
@@ -270,7 +333,6 @@ function Home({ usuario, onLogout }) {
             <span>⌖</span> Ubicaciones
           </a>
 
-          {/* REPORTES */}
           <a
             href="#reportes"
             className={vista === "reportes" ? "active" : ""}
@@ -282,7 +344,6 @@ function Home({ usuario, onLogout }) {
             <span>▤</span> Reportes
           </a>
 
-          {/* CONFIGURACIÓN */}
           <a
             href="#configuracion"
             className={vista === "configuracion" ? "active" : ""}
@@ -294,7 +355,6 @@ function Home({ usuario, onLogout }) {
             <span>⚙</span> Configuración
           </a>
 
-          {/* USUARIOS */}
           <a
             href="#usuarios"
             className={vista === "usuarios" ? "active" : ""}
@@ -305,6 +365,17 @@ function Home({ usuario, onLogout }) {
           >
             <span>♙</span> Usuarios
           </a>
+
+          <a
+            href="#roles"
+            className={vista === "roles" ? "active" : ""}
+            onClick={(e) => {
+              e.preventDefault();
+              setVista("roles");
+            }}
+          >
+            <span>♙</span> Administración de roles
+          </a>
         </nav>
 
         <button className="logout-button" onClick={onLogout}>
@@ -314,7 +385,6 @@ function Home({ usuario, onLogout }) {
 
       {/* CONTENIDO PRINCIPAL */}
       <section className="home-content">
-        {/* ENCABEZADO */}
         <header className="home-header">
           <div>
             <p className="breadcrumb">
@@ -340,7 +410,6 @@ function Home({ usuario, onLogout }) {
           </div>
         </header>
 
-        {/* INVENTARIO */}
         {vista === "inventario" ? (
           <Activos
             equipos={equipos}
@@ -348,23 +417,17 @@ function Home({ usuario, onLogout }) {
             categorias={categorias}
             asignacionesSoftware={asignacionesSoftware}
           />
-
-        /* COMPONENTES DE ACTIVOS */
         ) : vista === "componentes" ? (
           <ComponentesActivos
             equipos={equipos}
             componentes={componentes}
             setComponentes={setComponentes}
           />
-
-        /* CATEGORÍAS */
         ) : vista === "categorias" ? (
           <Categorias
             categorias={categorias}
             setCategorias={setCategorias}
           />
-
-        /* ASIGNACIONES */
         ) : vista === "asignaciones" ? (
           <Asignaciones
             equipos={equipos}
@@ -374,8 +437,6 @@ function Home({ usuario, onLogout }) {
             movimientosKardex={movimientosKardex}
             setMovimientosKardex={setMovimientosKardex}
           />
-
-        /* SOFTWARE Y LICENCIAS */
         ) : vista === "softwareLicencias" ? (
           <SoftwareLicencias
             equipos={equipos}
@@ -384,8 +445,6 @@ function Home({ usuario, onLogout }) {
             setAsignacionesSoftware={setAsignacionesSoftware}
             setMovimientosKardex={setMovimientosKardex}
           />
-
-        /* KARDEX */
         ) : vista === "kardex" ? (
           <Kardex
             equipos={equipos}
@@ -394,8 +453,6 @@ function Home({ usuario, onLogout }) {
             mantenimientos={mantenimientos}
             incidencias={incidencias}
           />
-
-        /* MANTENIMIENTO */
         ) : vista === "mantenimiento" ? (
           <Mantenimiento
             equipos={equipos}
@@ -407,8 +464,6 @@ function Home({ usuario, onLogout }) {
             gastosMantenimiento={gastosMantenimiento}
             setGastosMantenimiento={setGastosMantenimiento}
           />
-
-        /* GASTOS */
         ) : vista === "gastos" ? (
           <Gastos
             equipos={equipos}
@@ -416,45 +471,40 @@ function Home({ usuario, onLogout }) {
             setGastosMantenimiento={setGastosMantenimiento}
             setMovimientosKardex={setMovimientosKardex}
           />
-
-        /* INCIDENCIAS */
         ) : vista === "incidencias" ? (
           <Incidencias
             equipos={equipos}
             incidencias={incidencias}
             setIncidencias={setIncidencias}
           />
-
-        /* PROVEEDORES */
         ) : vista === "proveedores" ? (
           <Proveedores
             proveedores={proveedores}
             setProveedores={setProveedores}
           />
-
-        /* COLABORADORES */
         ) : vista === "colaboradores" ? (
           <Colaboradores
             colaboradores={colaboradores}
             setColaboradores={setColaboradores}
             departamentos={departamentos}
           />
-
-        /* UBICACIONES */
         ) : vista === "ubicaciones" ? (
           <Ubicaciones
             ubicaciones={ubicaciones}
             setUbicaciones={setUbicaciones}
           />
-
-        /* USUARIOS */
         ) : vista === "usuarios" ? (
           <Usuarios
             usuarios={usuarios}
             setUsuarios={setUsuarios}
+            roles={roles}
+            setRoles={setRoles}
           />
-
-        /* REPORTES */
+        ) : vista === "roles" ? (
+          <Roles
+            roles={roles}
+            setRoles={setRoles}
+          />
         ) : vista === "reportes" ? (
           <div className="welcome-card">
             <h2>Módulo de reportes</h2>
@@ -462,8 +512,6 @@ function Home({ usuario, onLogout }) {
               Aquí se podrán consultar los reportes generales del sistema.
             </p>
           </div>
-
-        /* CONFIGURACIÓN */
         ) : vista === "configuracion" ? (
           <div className="welcome-card">
             <h2>Configuración</h2>
@@ -471,11 +519,8 @@ function Home({ usuario, onLogout }) {
               Aquí se administrarán las configuraciones del sistema.
             </p>
           </div>
-
-        /* INICIO */
         ) : (
           <>
-            {/* BIENVENIDA */}
             <div className="welcome-card">
               <span className="welcome-label">
                 ZERMAT INTERNACIONAL · TECNOLOGÍAS DE LA INFORMACIÓN
@@ -489,7 +534,6 @@ function Home({ usuario, onLogout }) {
               </p>
             </div>
 
-            {/* INDICADORES */}
             <div className="section-heading">
               <div>
                 <h2>Resumen del sistema</h2>
@@ -551,7 +595,6 @@ function Home({ usuario, onLogout }) {
               </article>
             </div>
 
-            {/* ACTIVIDAD Y ALERTAS */}
             <div className="dashboard-bottom">
               <section className="dashboard-panel">
                 <h2>Actividad reciente</h2>
