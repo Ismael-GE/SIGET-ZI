@@ -1,7 +1,5 @@
-
 import { useState } from "react";
 import "./Home.css";
-
 import Activos from "../components/Activos";
 import Categorias from "../components/Categorias";
 import ComponentesActivos from "../components/ComponentesActivos";
@@ -16,6 +14,8 @@ import Colaboradores from "../components/Colaboradores";
 import Ubicaciones from "../components/Ubicaciones";
 import Usuarios from "../components/Usuarios";
 import Roles from "../components/Roles";
+import Garantias from "../components/Garantias";
+import ConfiguracionRed from "../components/ConfiguracionRed";
 
 // Módulos disponibles para configurar los permisos.
 const modulosRoles = [
@@ -33,6 +33,8 @@ const modulosRoles = [
   "Ubicaciones",
   "Reportes",
   "Configuración",
+  "Garantías",
+  "Configuración de red",
 ];
 
 // Acciones disponibles para cada módulo.
@@ -172,10 +174,12 @@ function Home({ usuario, onLogout }) {
     configuracion: "Configuración",
     gastos: "Gestión de gastos",
     proveedores: "Proveedores",
+    garantias: "Administración de garantías",
     colaboradores: "Colaboradores",
     ubicaciones: "Ubicaciones",
     usuarios: "Administración de usuarios",
     roles: "Administración de roles",
+    configuracionRed: "Configuración de red",
   };
 
   return (
@@ -309,6 +313,27 @@ function Home({ usuario, onLogout }) {
             }}
           >
             <span>▤</span> Proveedores
+          </a>
+          <a
+            href="#garantias"
+            className={vista === "garantias" ? "active" : ""}
+            onClick={(e) => {
+            e.preventDefault();
+            setVista("garantias");
+             }}
+          >
+          <span>▣</span> Garantías
+          </a>
+
+          <a
+            href="#configuracionRed"
+            className={vista === "configuracionRed" ? "active" : ""}
+            onClick={(e) => {
+              e.preventDefault();
+              setVista("configuracionRed");
+            }}
+          >
+            <span>⚙</span> Configuración de red
           </a>
 
           <a
@@ -482,6 +507,13 @@ function Home({ usuario, onLogout }) {
             proveedores={proveedores}
             setProveedores={setProveedores}
           />
+        ) : vista === "garantias" ? (
+          <Garantias
+          equipos={equipos}
+          proveedores={proveedores}
+          />
+        ) : vista === "configuracionRed" ? (
+          <ConfiguracionRed equipos={equipos} />
         ) : vista === "colaboradores" ? (
           <Colaboradores
             colaboradores={colaboradores}
@@ -504,7 +536,9 @@ function Home({ usuario, onLogout }) {
           <Roles
             roles={roles}
             setRoles={setRoles}
-          />
+            usuarios={usuarios}
+            setUsuarios={setUsuarios}
+/>
         ) : vista === "reportes" ? (
           <div className="welcome-card">
             <h2>Módulo de reportes</h2>

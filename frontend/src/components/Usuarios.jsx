@@ -24,62 +24,42 @@ const acciones = ["Consultar", "Registrar", "Editar", "Eliminar"];
 const permisosVacios = () =>
   Object.fromEntries(modulos.map((modulo) => [modulo, []]));
 
-const rolesIniciales = [
-  {
-    nombre: "Administrador",
-    permisos: Object.fromEntries(
-      modulos.map((modulo) => [modulo, [...acciones]])
-    ),
-  },
-  { nombre: "Supervisor de TI", permisos: permisosVacios() },
-  { nombre: "Técnico de soporte", permisos: permisosVacios() },
-  { nombre: "Empleado", permisos: permisosVacios() },
-  { nombre: "Auditor", permisos: permisosVacios() },
-];
-
 const formularioInicial = {
   nombre: "",
   usuario: "",
   correo: "",
   departamento: "",
-  rol: "Empleado",
+  rolId: "",
 };
 
-function convertirPermisosAObjeto(permisosUsuario = []) {
-  const resultado = permisosVacios();
-
-  permisosUsuario.forEach((item) => {
-    if (resultado[item.modulo]) {
-      resultado[item.modulo] = [...item.acciones];
-    }
-  });
-
-  return resultado;
-}
-
-function convertirPermisosALista(permisos) {
-  return Object.entries(permisos)
-    .filter(([, lista]) => lista.length > 0)
-    .map(([modulo, lista]) => ({
-      modulo,
-      acciones: [...lista],
-    }));
-}
-
-function Usuarios({ usuarios = [], setUsuarios }) {
+function Usuarios({ usuarios = [], setUsuarios, roles = [] }) {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modoEdicion, setModoEdicion] = useState(false);
   const [usuarioEditando, setUsuarioEditando] = useState(null);
-
   const [formulario, setFormulario] = useState(formularioInicial);
-  const [roles, setRoles] = useState(rolesIniciales);
-  const [nuevoRol, setNuevoRol] = useState("");
   const [busqueda, setBusqueda] = useState("");
   const [permisos, setPermisos] = useState(permisosVacios());
 
+  // Busca el rol usando su identificador.
   const rolSeleccionado = roles.find(
-    (rol) => rol.nombre === formulario.rol
+    (rol) => String(rol.id) === String(formulario.rolId)
   );
+
+  // Obtiene los permisos del rol seleccionado.
+  const obtenerPermisosRol = (rolId) => {
+    const rol = roles.find(
+      (item) => String(item.id) === String(rolId)
+    );
+
+    return rol?.permisos
+      ? Object.fromEntries(
+          modulos.map((modulo) => [
+            modulo,
+            [...(rol.permisos[modulo] || [])],
+          ])
+        )
+      : permisosVacios();
+  };
 
   const manejarCambio = (e) => {
     const { name, value } = e.target;
@@ -89,32 +69,40 @@ function Usuarios({ usuarios = [], setUsuarios }) {
       [name]: value,
     }));
 
-    if (name === "rol") {
-      const rol = roles.find((item) => item.nombre === value);
-      setPermisos(
-        rol ? { ...rol.permisos } : permisosVacios()
-      );
+    if (name === "rolId") {
+      setPermisos(obtenerPermisosRol(value));
     }
   };
 
   const abrirModal = () => {
+    const rolPredeterminado =
+      roles.find((rol) => rol.nombre === "Empleado") || roles[0];
+
     setModoEdicion(false);
     setUsuarioEditando(null);
-    setFormulario(formularioInicial);
 
-    const rolEmpleado = roles.find(
-      (rol) => rol.nombre === "Empleado"
-    );
+    setFormulario({
+      ...formularioInicial,
+      rolId: rolPredeterminado ? String(rolPredeterminado.id) : "",
+    });
 
     setPermisos(
-      rolEmpleado ? { ...rolEmpleado.permisos } : permisosVacios()
+      rolPredeterminado
+        ? obtenerPermisosRol(rolPredeterminado.id)
+        : permisosVacios()
     );
 
-    setNuevoRol("");
     setModalAbierto(true);
   };
 
   const abrirEdicion = (usuario) => {
+    // Compatibilidad con usuarios anteriores que solo guardaban el nombre.
+    const rolActual =
+      roles.find(
+        (rol) => String(rol.id) === String(usuario.rolId)
+      ) ||
+      roles.find((rol) => rol.nombre === usuario.rol);
+
     setModoEdicion(true);
     setUsuarioEditando(usuario.id);
 
@@ -123,20 +111,15 @@ function Usuarios({ usuarios = [], setUsuarios }) {
       usuario: usuario.usuario || "",
       correo: usuario.correo || "",
       departamento: usuario.departamento || "",
-      rol: usuario.rol || "Empleado",
+      rolId: rolActual ? String(rolActual.id) : "",
     });
 
-    const rol = roles.find(
-      (item) => item.nombre === usuario.rol
-    );
-
     setPermisos(
-      rol
-        ? { ...rol.permisos }
-        : convertirPermisosAObjeto(usuario.permisos)
+      rolActual
+        ? obtenerPermisosRol(rolActual.id)
+        : permisosVacios()
     );
 
-    setNuevoRol("");
     setModalAbierto(true);
   };
 
@@ -146,74 +129,6 @@ function Usuarios({ usuarios = [], setUsuarios }) {
     setUsuarioEditando(null);
     setFormulario(formularioInicial);
     setPermisos(permisosVacios());
-    setNuevoRol("");
-  };
-
-  const manejarPermiso = (modulo, accion) => {
-    setPermisos((anteriores) => {
-      const accionesActuales = anteriores[modulo] || [];
-
-      const nuevasAcciones = accionesActuales.includes(accion)
-        ? accionesActuales.filter((item) => item !== accion)
-        : [...accionesActuales, accion];
-
-      return {
-        ...anteriores,
-        [modulo]: nuevasAcciones,
-      };
-    });
-  };
-
-  const crearRol = () => {
-    const nombreRol = nuevoRol.trim();
-
-    if (!nombreRol) {
-      alert("Escribe el nombre del nuevo rol.");
-      return;
-    }
-
-    const existe = roles.some(
-      (rol) =>
-        rol.nombre.toLowerCase() === nombreRol.toLowerCase()
-    );
-
-    if (existe) {
-      alert("Ese rol ya existe.");
-      return;
-    }
-
-    setRoles((anteriores) => [
-      ...anteriores,
-      {
-        nombre: nombreRol,
-        permisos: permisosVacios(),
-      },
-    ]);
-
-    setFormulario((anterior) => ({
-      ...anterior,
-      rol: nombreRol,
-    }));
-
-    setPermisos(permisosVacios());
-    setNuevoRol("");
-
-    alert("Rol creado. Configura sus permisos.");
-  };
-
-  const guardarPermisosRol = () => {
-    setRoles((anteriores) =>
-      anteriores.map((rol) =>
-        rol.nombre === formulario.rol
-          ? {
-              ...rol,
-              permisos: convertirPermisosAObjeto(permisos),
-            }
-          : rol
-      )
-    );
-
-    alert(`Permisos del rol "${formulario.rol}" actualizados.`);
   };
 
   const registrarUsuario = (e) => {
@@ -225,6 +140,11 @@ function Usuarios({ usuarios = [], setUsuarios }) {
       !formulario.correo.trim()
     ) {
       alert("Completa los campos obligatorios.");
+      return;
+    }
+
+    if (!rolSeleccionado) {
+      alert("Selecciona un rol válido.");
       return;
     }
 
@@ -245,8 +165,9 @@ function Usuarios({ usuarios = [], setUsuarios }) {
       usuario: formulario.usuario.trim(),
       correo: formulario.correo.trim(),
       departamento: formulario.departamento.trim(),
-      rol: formulario.rol,
-      permisos: convertirPermisosALista(permisos),
+      rolId: rolSeleccionado.id,
+      // Se conserva el nombre para mostrarlo fácilmente en la tabla.
+      rol: rolSeleccionado.nombre,
     };
 
     if (modoEdicion) {
@@ -291,11 +212,19 @@ function Usuarios({ usuarios = [], setUsuarios }) {
   const usuariosFiltrados = usuarios.filter((item) => {
     const texto = busqueda.toLowerCase();
 
+    // Obtiene el nombre actualizado del rol mediante su ID.
+    const rolUsuario = roles.find(
+      (rol) => String(rol.id) === String(item.rolId)
+    );
+
+    const nombreRol = rolUsuario?.nombre || item.rol || "";
+
     return (
       item.nombre?.toLowerCase().includes(texto) ||
       item.usuario?.toLowerCase().includes(texto) ||
       item.correo?.toLowerCase().includes(texto) ||
-      item.departamento?.toLowerCase().includes(texto)
+      item.departamento?.toLowerCase().includes(texto) ||
+      nombreRol.toLowerCase().includes(texto)
     );
   });
 
@@ -304,7 +233,7 @@ function Usuarios({ usuarios = [], setUsuarios }) {
       <header className="usuarios-encabezado">
         <div>
           <h2>Administración de usuarios</h2>
-          <p>Gestiona las cuentas, roles y permisos de SIGET-ZI.</p>
+          <p>Gestiona las cuentas y asigna los roles de SIGET-ZI.</p>
         </div>
 
         <div className="usuarios-total">
@@ -348,43 +277,46 @@ function Usuarios({ usuarios = [], setUsuarios }) {
 
             <tbody>
               {usuariosFiltrados.length > 0 ? (
-                usuariosFiltrados.map((item) => (
-                  <tr key={item.id}>
-                    <td>{item.nombre}</td>
-                    <td>{item.usuario}</td>
-                    <td>{item.correo}</td>
-                    <td>{item.departamento || "Sin asignar"}</td>
-                    <td>{item.rol}</td>
-                    <td>
-                      <span
-                        className={`usuarios-estado ${
-                          item.estado === "Activo" ? "activo" : "inactivo"
-                        }`}
-                      >
-                        {item.estado}
-                      </span>
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className="usuarios-btn-estado"
-                        onClick={() => abrirEdicion(item)}
-                      >
-                        Editar
-                      </button>
+                usuariosFiltrados.map((item) => {
+                  const rolUsuario = roles.find(
+                    (rol) => String(rol.id) === String(item.rolId)
+                  );
 
-                      {" "}
-
-                      <button
-                        type="button"
-                        className="usuarios-btn-estado"
-                        onClick={() => cambiarEstado(item.id)}
-                      >
-                        {item.estado === "Activo" ? "Desactivar" : "Activar"}
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                  return (
+                    <tr key={item.id}>
+                      <td>{item.nombre}</td>
+                      <td>{item.usuario}</td>
+                      <td>{item.correo}</td>
+                      <td>{item.departamento || "Sin asignar"}</td>
+                      <td>{rolUsuario?.nombre || item.rol || "Sin rol"}</td>
+                      <td>
+                        <span
+                          className={`usuarios-estado ${
+                            item.estado === "Activo" ? "activo" : "inactivo"
+                          }`}
+                        >
+                          {item.estado}
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          className="usuarios-btn-estado"
+                          onClick={() => abrirEdicion(item)}
+                        >
+                          Editar
+                        </button>{" "}
+                        <button
+                          type="button"
+                          className="usuarios-btn-estado"
+                          onClick={() => cambiarEstado(item.id)}
+                        >
+                          {item.estado === "Activo" ? "Desactivar" : "Activar"}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td colSpan="7" className="usuarios-vacio">
@@ -417,8 +349,8 @@ function Usuarios({ usuarios = [], setUsuarios }) {
                 </h2>
                 <p>
                   {modoEdicion
-                    ? "Modifica los datos y permisos de la cuenta."
-                    : "Registra una cuenta y configura sus permisos."}
+                    ? "Modifica los datos de la cuenta."
+                    : "Registra una cuenta y asigna un rol."}
                 </p>
               </div>
 
@@ -464,7 +396,9 @@ function Usuarios({ usuarios = [], setUsuarios }) {
                   </div>
 
                   <div className="usuarios-campo">
-                    <label htmlFor="usuario-correo">Correo electrónico *</label>
+                    <label htmlFor="usuario-correo">
+                      Correo electrónico *
+                    </label>
                     <input
                       id="usuario-correo"
                       name="correo"
@@ -477,7 +411,9 @@ function Usuarios({ usuarios = [], setUsuarios }) {
                   </div>
 
                   <div className="usuarios-campo">
-                    <label htmlFor="usuario-departamento">Departamento</label>
+                    <label htmlFor="usuario-departamento">
+                      Departamento
+                    </label>
                     <input
                       id="usuario-departamento"
                       name="departamento"
@@ -494,44 +430,30 @@ function Usuarios({ usuarios = [], setUsuarios }) {
 
                 <div className="usuarios-campo">
                   <label htmlFor="usuario-rol">Seleccionar rol</label>
+
                   <select
                     id="usuario-rol"
-                    name="rol"
-                    value={formulario.rol}
+                    name="rolId"
+                    value={formulario.rolId}
                     onChange={manejarCambio}
+                    required
                   >
+                    <option value="">Selecciona un rol</option>
+
                     {roles.map((rol) => (
-                      <option key={rol.nombre} value={rol.nombre}>
+                      <option key={rol.id} value={String(rol.id)}>
                         {rol.nombre}
                       </option>
                     ))}
                   </select>
                 </div>
 
-                <div className="usuarios-crear-rol">
-                  <label htmlFor="usuario-nuevo-rol">
-                    Crear un rol personalizado
-                  </label>
-
-                  <div className="usuarios-crear-rol-campos">
-                    <input
-                      id="usuario-nuevo-rol"
-                      value={nuevoRol}
-                      onChange={(e) => setNuevoRol(e.target.value)}
-                      placeholder="Ej. Responsable de inventario"
-                    />
-
-                    <button type="button" onClick={crearRol}>
-                      Agregar rol
-                    </button>
-                  </div>
-                </div>
-
                 <div className="usuarios-separador" />
 
-                <h3>Permisos por módulo</h3>
+                <h3>Permisos del rol</h3>
                 <p className="usuarios-ayuda">
-                  Configura los permisos que tendrá el rol seleccionado.
+                  Estos permisos son una vista previa. Para modificarlos,
+                  ingresa a Administración de roles.
                 </p>
 
                 <div className="usuarios-permisos">
@@ -547,7 +469,8 @@ function Usuarios({ usuarios = [], setUsuarios }) {
                               checked={
                                 permisos[modulo]?.includes(accion) || false
                               }
-                              onChange={() => manejarPermiso(modulo, accion)}
+                              disabled
+                              readOnly
                             />
                             {accion}
                           </label>
@@ -557,17 +480,10 @@ function Usuarios({ usuarios = [], setUsuarios }) {
                   ))}
                 </div>
 
-                <button
-                  type="button"
-                  className="usuarios-btn-guardar"
-                  onClick={guardarPermisosRol}
-                >
-                  Guardar permisos del rol
-                </button>
-
-                {rolSeleccionado && (
+                {rolSeleccionado?.protegido && (
                   <p className="usuarios-ayuda">
-                    Rol seleccionado: <strong>{rolSeleccionado.nombre}</strong>
+                    El rol Administrador está protegido y no puede modificarse
+                    desde esta pantalla.
                   </p>
                 )}
               </div>

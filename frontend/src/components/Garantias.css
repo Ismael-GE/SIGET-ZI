@@ -1,0 +1,194 @@
+
+.garantias-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  color: #17243b;
+}
+
+.garantias-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.garantias-header h2 {
+  margin: 0 0 6px;
+  font-size: 25px;
+}
+
+.garantias-header p {
+  margin: 0;
+  color: #718096;
+}
+
+.garantias-header button,
+.garantias-acciones button {
+  padding: 11px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #3867e8;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.garantias-indicadores {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.garantias-indicadores article {
+  padding: 20px;
+  background: white;
+  border: 1px solid #e5eaf2;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(20, 35, 63, 0.04);
+}
+
+.garantias-indicadores h3 {
+  margin: 0 0 8px;
+  font-size: 27px;
+  color: #3867e8;
+}
+
+.garantias-indicadores p {
+  margin: 0;
+  color: #718096;
+  font-size: 14px;
+}
+
+.garantias-formulario,
+.garantias-tabla-contenedor {
+  padding: 22px;
+  background: white;
+  border: 1px solid #e5eaf2;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(20, 35, 63, 0.04);
+}
+
+.garantias-formulario h3,
+.garantias-tabla-contenedor h3 {
+  margin: 0 0 20px;
+  font-size: 19px;
+}
+
+.garantias-formulario-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.garantias-formulario-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.garantias-formulario label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.garantias-formulario input,
+.garantias-formulario select,
+.garantias-formulario textarea,
+.garantias-busqueda input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #dce3ed;
+  border-radius: 8px;
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.garantias-formulario input:focus,
+.garantias-formulario select:focus,
+.garantias-formulario textarea:focus,
+.garantias-busqueda input:focus {
+  outline: none;
+  border-color: #3867e8;
+  box-shadow: 0 0 0 3px rgba(56, 103, 232, 0.12);
+}
+
+.garantias-campo-completo {
+  grid-column: 1 / -1;
+}
+
+.garantias-acciones {
+  display: flex;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.garantias-acciones button:last-child {
+  background: #e9edf5;
+  color: #344054;
+}
+
+.garantias-busqueda input {
+  background: white;
+}
+
+.garantias-tabla-contenedor {
+  overflow-x: auto;
+}
+
+.garantias-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.garantias-tabla th,
+.garantias-tabla td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #edf0f5;
+  font-size: 14px;
+}
+
+.garantias-tabla th {
+  background: #f5f7fb;
+  color: #526078;
+  font-weight: 600;
+}
+
+.garantias-vacio {
+  padding: 25px !important;
+  text-align: center;
+  color: #718096;
+}
+
+.garantias-total {
+  margin: 0;
+  color: #718096;
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .garantias-indicadores {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .garantias-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .garantias-formulario-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .garantias-campo-completo {
+    grid-column: auto;
+  }
+
+  .garantias-indicadores {
+    grid-template-columns: 1fr;
+  }
+}

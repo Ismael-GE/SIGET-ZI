@@ -1,0 +1,363 @@
+
+/* =========================================
+   PÁGINA PRINCIPAL
+========================================= */
+
+.instalaciones-page {
+  color: #1f2937;
+}
+
+/* =========================================
+   ENCABEZADO
+========================================= */
+
+.instalaciones-encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 25px 0;
+}
+
+.instalaciones-encabezado h2 {
+  margin: 0 0 6px;
+  color: #172033;
+}
+
+.instalaciones-encabezado p {
+  margin: 0;
+  color: #667085;
+}
+
+.btn-nueva-instalacion {
+  border: none;
+  border-radius: 6px;
+  padding: 10px 15px;
+  background: #2457a7;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-nueva-instalacion:hover {
+  background: #173b70;
+}
+
+/* =========================================
+   TARJETAS DE RESUMEN
+========================================= */
+
+.instalaciones-resumen {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.instalacion-indicador {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 18px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+}
+
+.instalacion-indicador span {
+  color: #667085;
+  font-size: 14px;
+}
+
+.instalacion-indicador strong {
+  color: #173b70;
+  font-size: 25px;
+}
+
+/* =========================================
+   TABLA Y BUSCADOR
+========================================= */
+
+.instalaciones-tabla-contenedor {
+  padding: 18px;
+  overflow-x: auto;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+}
+
+.instalaciones-busqueda {
+  margin-bottom: 16px;
+}
+
+.instalaciones-busqueda input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  color: #1f2937;
+  background: white;
+  font-size: 14px;
+}
+
+.instalaciones-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.instalaciones-tabla th,
+.instalaciones-tabla td {
+  padding: 13px 12px;
+  border-bottom: 1px solid #eaecf0;
+  color: #344054;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.instalaciones-tabla th {
+  color: #173b70;
+  background: #f8fafc;
+  white-space: nowrap;
+}
+
+.sin-instalaciones {
+  padding: 25px !important;
+  text-align: center;
+  color: #667085 !important;
+}
+
+/* =========================================
+   ESTADO DE INSTALACIÓN
+========================================= */
+
+.estado-instalacion {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 20px;
+  background: #ecfdf3;
+  color: #067647;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* =========================================
+   BOTONES DE ACCIONES
+========================================= */
+
+.instalaciones-acciones {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.btn-editar-instalacion,
+.btn-eliminar-instalacion,
+.btn-ver-clave {
+  border: none;
+  border-radius: 5px;
+  padding: 7px 10px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-editar-instalacion {
+  background: #2457a7;
+}
+
+.btn-editar-instalacion:hover {
+  background: #173b70;
+}
+
+.btn-eliminar-instalacion {
+  background: #b42318;
+}
+
+.btn-eliminar-instalacion:hover {
+  background: #912018;
+}
+
+.btn-ver-clave {
+  background: #475467;
+}
+
+.btn-ver-clave:hover {
+  background: #344054;
+}
+
+.clave-consulta {
+  max-width: 180px;
+  margin-top: 7px;
+  padding: 7px;
+  overflow-wrap: anywhere;
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+  background: #f8fafc;
+  color: #344054;
+  font-size: 12px;
+}
+
+/* =========================================
+   VENTANA MODAL
+========================================= */
+
+.instalaciones-modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.instalaciones-modal {
+  width: 100%;
+  max-width: 760px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 25px;
+  border-radius: 10px;
+  background: white;
+  color: #1f2937;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* =========================================
+   ENCABEZADO DEL MODAL
+========================================= */
+
+.instalaciones-modal-encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.instalaciones-modal-encabezado h2 {
+  margin: 0;
+  color: #172033;
+}
+
+.instalaciones-modal-encabezado button {
+  border: none;
+  background: transparent;
+  color: #667085;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+/* =========================================
+   SECCIONES DEL FORMULARIO
+========================================= */
+
+.instalaciones-modal h3 {
+  margin: 22px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eaecf0;
+  color: #173b70;
+  font-size: 16px;
+}
+
+.instalaciones-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.instalaciones-form-grid label {
+  display: block;
+  margin-bottom: 7px;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.instalaciones-form-grid input,
+.instalaciones-form-grid select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 11px;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  background: white;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.instalaciones-form-grid input:focus,
+.instalaciones-form-grid select:focus,
+.instalaciones-busqueda input:focus {
+  outline: none;
+  border-color: #2457a7;
+  box-shadow: 0 0 0 3px rgba(36, 87, 167, 0.12);
+}
+
+/* =========================================
+   MENSAJES
+========================================= */
+
+.mensaje-instalacion {
+  margin-top: 15px;
+  color: #b42318;
+  font-size: 13px;
+}
+
+/* =========================================
+   BOTONES DEL FORMULARIO
+========================================= */
+
+.instalaciones-modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.instalaciones-modal-acciones button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  background: #2457a7;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.instalaciones-modal-acciones button[type="button"] {
+  background: #667085;
+}
+
+.instalaciones-modal-acciones button:hover {
+  opacity: 0.9;
+}
+
+/* =========================================
+   DISEÑO RESPONSIVO
+========================================= */
+
+@media (max-width: 700px) {
+  .instalaciones-encabezado {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .instalaciones-resumen,
+  .instalaciones-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .instalaciones-acciones {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .instalaciones-modal {
+    padding: 18px;
+  }
+}

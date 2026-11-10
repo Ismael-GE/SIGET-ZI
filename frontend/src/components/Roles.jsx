@@ -24,7 +24,7 @@ const acciones = ["Consultar", "Registrar", "Editar", "Eliminar"];
 const crearPermisosVacios = () =>
   Object.fromEntries(modulos.map((modulo) => [modulo, []]));
 
-function Roles({ roles, setRoles }) {
+function Roles({ roles = [], setRoles, usuarios = [], setUsuarios }) {
   const [rolSeleccionado, setRolSeleccionado] = useState(null);
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
@@ -44,7 +44,7 @@ function Roles({ roles, setRoles }) {
   const seleccionarRol = (rol) => {
     setRolSeleccionado(rol.id);
     setNombre(rol.nombre);
-    setDescripcion(rol.descripcion);
+    setDescripcion(rol.descripcion || "");
 
     setPermisos(
       Object.fromEntries(
@@ -92,7 +92,7 @@ function Roles({ roles, setRoles }) {
     }
 
     const nuevo = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       nombre: nombre.trim(),
       descripcion: descripcion.trim(),
       permisos: Object.fromEntries(
@@ -110,48 +110,105 @@ function Roles({ roles, setRoles }) {
     alert("Rol creado correctamente.");
   };
 
-  const guardarCambios = (e) => {
-    e.preventDefault();
+const guardarCambios = (e) => {
+  e.preventDefault();
 
-    if (!nombre.trim()) {
-      alert("El nombre del rol es obligatorio.");
-      return;
-    }
+  if (!nombre.trim()) {
+    alert("El nombre del rol es obligatorio.");
+    return;
+  }
 
-    const existe = roles.some(
-      (rol) =>
-        rol.id !== rolSeleccionado &&
-        rol.nombre.toLowerCase() === nombre.trim().toLowerCase()
+  const rolAEditar = roles.find(
+    (rol) => String(rol.id) === String(rolSeleccionado)
+  );
+
+  if (!rolAEditar) {
+    alert("No se encontró el rol seleccionado.");
+    return;
+  }
+
+  const existe = roles.some(
+    (rol) =>
+      String(rol.id) !== String(rolSeleccionado) &&
+      rol.nombre.toLowerCase() === nombre.trim().toLowerCase()
+  );
+
+  if (existe) {
+    alert("Ya existe otro rol con ese nombre.");
+    return;
+  }
+
+  const nuevoNombre = rolAEditar.protegido
+    ? rolAEditar.nombre
+    : nombre.trim();
+
+  const nuevosPermisos = rolAEditar.protegido
+    ? rolAEditar.permisos
+    : Object.fromEntries(
+        modulos.map((modulo) => [
+          modulo,
+          [...(permisos[modulo] || [])],
+        ])
+      );
+
+  setRoles((anteriores) =>
+    anteriores.map((rol) =>
+      String(rol.id) === String(rolSeleccionado)
+        ? {
+            ...rol,
+            nombre: nuevoNombre,
+            descripcion: descripcion.trim(),
+            permisos: nuevosPermisos,
+          }
+        : rol
+    )
+  );
+
+  setUsuarios((anteriores) =>
+    anteriores.map((usuario) =>
+      String(usuario.rolId) === String(rolSeleccionado)
+        ? { ...usuario, rol: nuevoNombre }
+        : usuario
+    )
+  );
+
+  limpiarFormulario();
+  alert("Cambios del rol guardados correctamente.");
+};
+
+const eliminarRol = (rol) => {
+  if (rol.protegido) {
+    alert("No se puede eliminar el rol Administrador.");
+    return;
+  }
+
+  const usuariosAsignados = usuarios.filter(
+    (usuario) => String(usuario.rolId) === String(rol.id)
+  );
+
+  if (usuariosAsignados.length > 0) {
+    alert(
+      `No se puede eliminar este rol porque tiene ${usuariosAsignados.length} usuario(s) asignado(s).`
     );
+    return;
+  }
 
-    if (existe) {
-      alert("Ya existe otro rol con ese nombre.");
-      return;
-    }
+  const confirmar = window.confirm(
+    `¿Estás seguro de eliminar el rol "${rol.nombre}"?`
+  );
 
-    setRoles((anteriores) =>
-      anteriores.map((rol) =>
-        rol.id === rolSeleccionado
-          ? {
-              ...rol,
-              nombre: rol.protegido ? rol.nombre : nombre.trim(),
-              descripcion: descripcion.trim(),
-              permisos: rol.protegido
-                ? rol.permisos
-                : Object.fromEntries(
-                    modulos.map((modulo) => [
-                      modulo,
-                      [...(permisos[modulo] || [])],
-                    ])
-                  ),
-            }
-          : rol
-      )
-    );
+  if (!confirmar) return;
 
+  setRoles((anteriores) =>
+    anteriores.filter((item) => String(item.id) !== String(rol.id))
+  );
+
+  if (String(rolSeleccionado) === String(rol.id)) {
     limpiarFormulario();
-    alert("Cambios del rol guardados.");
-  };
+  }
+
+  alert("Rol eliminado correctamente.");
+};
 
   const rolesFiltrados = roles.filter((rol) =>
     rol.nombre.toLowerCase().includes(busqueda.toLowerCase())
@@ -161,8 +218,11 @@ function Roles({ roles, setRoles }) {
     <section className="roles-container">
       <header className="roles-encabezado">
         <div>
-          <h2>Administración de roles</h2>
-          <p>Define los roles y los permisos disponibles en SIGET-ZI.</p>
+          <h2>Administración de roles y permisos</h2>
+          <p>
+            Define los perfiles de acceso y las acciones permitidas
+            en cada módulo de SIGET-ZI.
+          </p>
         </div>
 
         <div className="roles-total">
@@ -172,9 +232,11 @@ function Roles({ roles, setRoles }) {
       </header>
 
       <div className="roles-contenido">
+        {/* LISTADO DE ROLES */}
         <aside className="roles-listado">
           <div className="roles-listado-encabezado">
             <h3>Roles existentes</h3>
+
             <button type="button" onClick={limpiarFormulario}>
               + Nuevo
             </button>
@@ -185,45 +247,74 @@ function Roles({ roles, setRoles }) {
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
             placeholder="Buscar rol..."
+            aria-label="Buscar rol"
           />
 
           <div className="roles-lista">
-            {rolesFiltrados.map((rol) => (
-              <button
-                type="button"
-                key={rol.id}
-                className={`roles-elemento ${
-                  rolSeleccionado === rol.id ? "seleccionado" : ""
-                }`}
-                onClick={() => seleccionarRol(rol)}
-              >
-                <strong>{rol.nombre}</strong>
-                <span>
-                  {rol.protegido ? "Rol protegido" : "Rol configurable"}
-                </span>
-              </button>
-            ))}
+           
+{rolesFiltrados.map((rol) => (
+  <div
+    key={rol.id}
+    className={`roles-elemento ${
+      rolSeleccionado === rol.id ? "seleccionado" : ""
+    }`}
+  >
+    <button
+      type="button"
+      className="roles-elemento-info"
+      onClick={() => seleccionarRol(rol)}
+    >
+      <strong>{rol.nombre}</strong>
+
+      <span>
+        {rol.protegido ? "Rol protegido" : "Rol configurable"}
+      </span>
+    </button>
+
+    {!rol.protegido && (
+      <button
+        type="button"
+        className="roles-btn-eliminar"
+        onClick={() => eliminarRol(rol)}
+      >
+        Eliminar
+      </button>
+    )}
+  </div>
+))}
+ 
 
             {rolesFiltrados.length === 0 && (
-              <p className="roles-vacio">No se encontraron roles.</p>
+              <p className="roles-vacio">
+                No se encontraron roles.
+              </p>
             )}
           </div>
         </aside>
 
+        {/* FORMULARIO DE ROLES */}
         <div className="roles-editor">
           <form onSubmit={rolSeleccionado ? guardarCambios : crearRol}>
             <div className="roles-editor-encabezado">
               <div>
                 <h3>
-                  {rolSeleccionado ? "Configurar rol" : "Crear nuevo rol"}
+                  {rolSeleccionado
+                    ? "Editar configuración del rol"
+                    : "Crear nuevo rol"}
                 </h3>
-                <p>Selecciona los permisos que tendrá este rol.</p>
+
+                <p>
+                  Configura la información y los permisos del perfil.
+                </p>
               </div>
             </div>
 
             <div className="roles-campos">
               <div className="roles-campo">
-                <label htmlFor="rol-nombre">Nombre del rol *</label>
+                <label htmlFor="rol-nombre">
+                  Nombre del rol *
+                </label>
+
                 <input
                   id="rol-nombre"
                   value={nombre}
@@ -235,7 +326,10 @@ function Roles({ roles, setRoles }) {
               </div>
 
               <div className="roles-campo">
-                <label htmlFor="rol-descripcion">Descripción</label>
+                <label htmlFor="rol-descripcion">
+                  Descripción
+                </label>
+
                 <textarea
                   id="rol-descripcion"
                   value={descripcion}
@@ -245,6 +339,13 @@ function Roles({ roles, setRoles }) {
                 />
               </div>
             </div>
+
+            {esProtegido && (
+              <p className="roles-vacio">
+                El rol Administrador está protegido. Sus permisos no
+                pueden modificarse desde esta pantalla.
+              </p>
+            )}
 
             <div className="roles-permisos-encabezado">
               <h3>Permisos por módulo</h3>
@@ -267,6 +368,7 @@ function Roles({ roles, setRoles }) {
                           onChange={() => cambiarPermiso(modulo, accion)}
                           disabled={esProtegido}
                         />
+
                         {accion}
                       </label>
                     ))}
@@ -284,7 +386,11 @@ function Roles({ roles, setRoles }) {
                 Limpiar
               </button>
 
-              <button type="submit" className="roles-btn-guardar">
+              <button
+                type="submit"
+                className="roles-btn-guardar"
+                disabled={esProtegido}
+              >
                 {rolSeleccionado ? "Guardar cambios" : "Crear rol"}
               </button>
             </div>
