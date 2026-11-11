@@ -2,7 +2,11 @@
 import { useState } from "react";
 import "./InstalacionesSoftware.css";
 
-function InstalacionesSoftware({ equipos = [] }) {
+function InstalacionesSoftware({
+  equipos = [],
+  instalaciones = [],
+  setInstalaciones,
+}) {
   const formularioInicial = {
     id_activo: "",
     nombre: "",
@@ -17,7 +21,6 @@ function InstalacionesSoftware({ equipos = [] }) {
     estado_instalacion: "",
   };
 
-  const [instalaciones, setInstalaciones] = useState([]);
   const [formulario, setFormulario] = useState(formularioInicial);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [idEdicion, setIdEdicion] = useState(null);
@@ -65,7 +68,9 @@ function InstalacionesSoftware({ equipos = [] }) {
       formulario.fecha_vencimiento &&
       formulario.fecha_vencimiento < formulario.fecha_instalacion
     ) {
-      setMensaje("La fecha de vencimiento no puede ser anterior a la instalación.");
+      setMensaje(
+        "La fecha de vencimiento no puede ser anterior a la instalación."
+      );
       return;
     }
 
@@ -73,7 +78,19 @@ function InstalacionesSoftware({ equipos = [] }) {
       formulario.fecha_retiro &&
       formulario.fecha_retiro < formulario.fecha_instalacion
     ) {
-      setMensaje("La fecha de retiro no puede ser anterior a la instalación.");
+      setMensaje(
+        "La fecha de retiro no puede ser anterior a la instalación."
+      );
+      return;
+    }
+
+    if (
+      formulario.estado_instalacion === "Retirada" &&
+      !formulario.fecha_retiro
+    ) {
+      setMensaje(
+        "Registra la fecha de retiro cuando la instalación esté retirada."
+      );
       return;
     }
 
@@ -100,17 +117,17 @@ function InstalacionesSoftware({ equipos = [] }) {
 
   const editarInstalacion = (instalacion) => {
     setFormulario({
-      id_activo: instalacion.id_activo,
-      nombre: instalacion.nombre,
-      fabricante: instalacion.fabricante,
-      version: instalacion.version,
-      arquitectura: instalacion.arquitectura,
-      tipo_licencia: instalacion.tipo_licencia,
-      clave_protegida: instalacion.clave_protegida,
-      fecha_instalacion: instalacion.fecha_instalacion,
-      fecha_vencimiento: instalacion.fecha_vencimiento,
-      fecha_retiro: instalacion.fecha_retiro,
-      estado_instalacion: instalacion.estado_instalacion,
+      id_activo: instalacion.id_activo ?? "",
+      nombre: instalacion.nombre ?? "",
+      fabricante: instalacion.fabricante ?? "",
+      version: instalacion.version ?? "",
+      arquitectura: instalacion.arquitectura ?? "",
+      tipo_licencia: instalacion.tipo_licencia ?? "",
+      clave_protegida: instalacion.clave_protegida ?? "",
+      fecha_instalacion: instalacion.fecha_instalacion ?? "",
+      fecha_vencimiento: instalacion.fecha_vencimiento ?? "",
+      fecha_retiro: instalacion.fecha_retiro ?? "",
+      estado_instalacion: instalacion.estado_instalacion ?? "",
     });
 
     setIdEdicion(instalacion.id);
@@ -137,32 +154,36 @@ function InstalacionesSoftware({ equipos = [] }) {
     }));
   };
 
+  const obtenerEquipo = (idActivo) =>
+    equipos.find(
+      (equipo) =>
+        String(equipo.id) === String(idActivo) ||
+        String(equipo.id_activo) === String(idActivo)
+    );
+
   const instalacionesFiltradas = instalaciones.filter((instalacion) => {
     const termino = busqueda.toLowerCase();
 
-    const equipo = equipos.find(
-      (elemento) => String(elemento.id) === String(instalacion.id_activo)
-    );
+    const equipo = obtenerEquipo(instalacion.id_activo);
 
     return (
-      instalacion.nombre.toLowerCase().includes(termino) ||
+      (instalacion.nombre || "").toLowerCase().includes(termino) ||
       (instalacion.fabricante || "").toLowerCase().includes(termino) ||
       (instalacion.version || "").toLowerCase().includes(termino) ||
       (equipo?.numero_inventario || "").toLowerCase().includes(termino)
     );
   });
 
-  const equipoSeleccionado = (idActivo) =>
-    equipos.find(
-      (equipo) => String(equipo.id) === String(idActivo)
-    );
+  const equipoSeleccionado = (idActivo) => obtenerEquipo(idActivo);
 
   return (
     <section className="instalaciones-page">
       <div className="instalaciones-encabezado">
         <div>
           <h2>Instalaciones de software</h2>
-          <p>Administra los programas instalados en los activos tecnológicos.</p>
+          <p>
+            Administra los programas instalados en los activos tecnológicos.
+          </p>
         </div>
 
         <button
@@ -182,18 +203,22 @@ function InstalacionesSoftware({ equipos = [] }) {
         <article className="instalacion-indicador">
           <span>Instalaciones activas</span>
           <strong>
-            {instalaciones.filter(
-              (item) => item.estado_instalacion === "Activa"
-            ).length}
+            {
+              instalaciones.filter(
+                (item) => item.estado_instalacion === "Activa"
+              ).length
+            }
           </strong>
         </article>
 
         <article className="instalacion-indicador">
           <span>Instalaciones retiradas</span>
           <strong>
-            {instalaciones.filter(
-              (item) => item.estado_instalacion === "Retirada"
-            ).length}
+            {
+              instalaciones.filter(
+                (item) => item.estado_instalacion === "Retirada"
+              ).length
+            }
           </strong>
         </article>
       </div>
@@ -255,6 +280,7 @@ function InstalacionesSoftware({ equipos = [] }) {
                       ) : (
                         "Sin clave"
                       )}
+
                       {mostrarClaves[instalacion.id] && (
                         <div className="clave-consulta">
                           {instalacion.clave_protegida}
@@ -269,6 +295,7 @@ function InstalacionesSoftware({ equipos = [] }) {
                         >
                           Editar
                         </button>
+
                         <button
                           className="btn-eliminar-instalacion"
                           onClick={() => eliminarInstalacion(instalacion.id)}
@@ -323,8 +350,12 @@ function InstalacionesSoftware({ equipos = [] }) {
                     <option value="">Selecciona un equipo</option>
 
                     {equipos.map((equipo) => (
-                      <option key={equipo.id} value={equipo.id}>
-                        {equipo.numero_inventario} - {equipo.marca} {equipo.modelo}
+                      <option
+                        key={equipo.id ?? equipo.id_activo}
+                        value={equipo.id ?? equipo.id_activo}
+                      >
+                        {equipo.numero_inventario || "Sin inventario"} -{" "}
+                        {equipo.marca || ""} {equipo.modelo || ""}
                       </option>
                     ))}
                   </select>
@@ -389,6 +420,7 @@ function InstalacionesSoftware({ equipos = [] }) {
                     value={formulario.clave_protegida}
                     onChange={actualizarCampo}
                     placeholder="Clave de licencia"
+                    autoComplete="new-password"
                   />
                 </div>
 
@@ -452,7 +484,9 @@ function InstalacionesSoftware({ equipos = [] }) {
                 </button>
 
                 <button type="submit">
-                  {idEdicion !== null ? "Guardar cambios" : "Registrar instalación"}
+                  {idEdicion !== null
+                    ? "Guardar cambios"
+                    : "Registrar instalación"}
                 </button>
               </div>
             </form>

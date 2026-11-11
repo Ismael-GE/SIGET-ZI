@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import "./Home.css";
 import Activos from "../components/Activos";
@@ -16,6 +17,10 @@ import Usuarios from "../components/Usuarios";
 import Roles from "../components/Roles";
 import Garantias from "../components/Garantias";
 import ConfiguracionRed from "../components/ConfiguracionRed";
+import InstalacionesSoftware from "../components/InstalacionesSoftware";
+import Auditoria from "../components/Auditoria";
+import Reportes from "../components/Reportes";
+import Configuracion from "../components/Configuracion";
 
 // Módulos disponibles para configurar los permisos.
 const modulosRoles = [
@@ -24,6 +29,7 @@ const modulosRoles = [
   "Categorías",
   "Asignaciones",
   "Software y licencias",
+  "Instalaciones de software",
   "Kardex",
   "Mantenimiento",
   "Gastos",
@@ -98,6 +104,7 @@ function Home({ usuario, onLogout }) {
   const [equipos, setEquipos] = useState([]);
   const [asignaciones, setAsignaciones] = useState([]);
   const [asignacionesSoftware, setAsignacionesSoftware] = useState([]);
+  const [instalacionesSoftware, setInstalacionesSoftware] = useState([]);
   const [movimientosKardex, setMovimientosKardex] = useState([]);
   const [mantenimientos, setMantenimientos] = useState([]);
   const [gastosMantenimiento, setGastosMantenimiento] = useState([]);
@@ -107,6 +114,9 @@ function Home({ usuario, onLogout }) {
   const [colaboradores, setColaboradores] = useState([]);
   const [ubicaciones, setUbicaciones] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
+
+  // Estado centralizado de los registros de auditoría.
+  const [registrosAuditoria, setRegistrosAuditoria] = useState([]);
 
   // Estado centralizado de roles y permisos.
   const [roles, setRoles] = useState(rolesIniciales);
@@ -167,6 +177,7 @@ function Home({ usuario, onLogout }) {
     categorias: "Categorías",
     asignaciones: "Control de asignaciones",
     softwareLicencias: "Software y licencias",
+    instalacionesSoftware: "Instalaciones de software",
     kardex: "Historial de movimientos",
     mantenimiento: "Control de mantenimiento",
     incidencias: "Control de incidencias",
@@ -180,6 +191,7 @@ function Home({ usuario, onLogout }) {
     usuarios: "Administración de usuarios",
     roles: "Administración de roles",
     configuracionRed: "Configuración de red",
+    auditoria: "Auditoría",
   };
 
   return (
@@ -202,7 +214,7 @@ function Home({ usuario, onLogout }) {
               setVista("inicio");
             }}
           >
-            <span>⌂</span> Inicio
+            <span></span> Inicio
           </a>
 
           <a
@@ -213,7 +225,7 @@ function Home({ usuario, onLogout }) {
               setVista("inventario");
             }}
           >
-            <span>▣</span> Inventario
+            <span></span> Inventario
           </a>
 
           <a
@@ -224,7 +236,7 @@ function Home({ usuario, onLogout }) {
               setVista("componentes");
             }}
           >
-            <span>▦</span> Componentes
+            <span></span> Componentes
           </a>
 
           <a
@@ -235,7 +247,7 @@ function Home({ usuario, onLogout }) {
               setVista("categorias");
             }}
           >
-            <span>▦</span> Categorías
+            <span></span> Categorías
           </a>
 
           <a
@@ -246,7 +258,7 @@ function Home({ usuario, onLogout }) {
               setVista("asignaciones");
             }}
           >
-            <span>♙</span> Asignaciones
+            <span></span> Asignaciones
           </a>
 
           <a
@@ -257,7 +269,18 @@ function Home({ usuario, onLogout }) {
               setVista("softwareLicencias");
             }}
           >
-            <span>▧</span> Software y licencias
+            <span></span> Software y licencias
+          </a>
+
+          <a
+            href="#instalacionesSoftware"
+            className={vista === "instalacionesSoftware" ? "active" : ""}
+            onClick={(e) => {
+              e.preventDefault();
+              setVista("instalacionesSoftware");
+            }}
+          >
+            <span></span> Instalaciones de software
           </a>
 
           <a
@@ -268,7 +291,18 @@ function Home({ usuario, onLogout }) {
               setVista("kardex");
             }}
           >
-            <span>▤</span> Kardex
+            <span></span> Kardex
+          </a>
+
+          <a
+            href="#auditoria"
+            className={vista === "auditoria" ? "active" : ""}
+            onClick={(e) => {
+              e.preventDefault();
+              setVista("auditoria");
+            }}
+          >
+            <span></span> Auditoría
           </a>
 
           <a
@@ -279,7 +313,7 @@ function Home({ usuario, onLogout }) {
               setVista("mantenimiento");
             }}
           >
-            <span>⚙</span> Mantenimiento
+            <span></span> Mantenimiento
           </a>
 
           <a
@@ -290,7 +324,7 @@ function Home({ usuario, onLogout }) {
               setVista("gastos");
             }}
           >
-            <span>$</span> Gastos
+            <span></span> Gastos
           </a>
 
           <a
@@ -301,7 +335,7 @@ function Home({ usuario, onLogout }) {
               setVista("incidencias");
             }}
           >
-            <span>⚠</span> Incidencias
+            <span></span> Incidencias
           </a>
 
           <a
@@ -312,17 +346,18 @@ function Home({ usuario, onLogout }) {
               setVista("proveedores");
             }}
           >
-            <span>▤</span> Proveedores
+            <span></span> Proveedores
           </a>
+
           <a
             href="#garantias"
             className={vista === "garantias" ? "active" : ""}
             onClick={(e) => {
-            e.preventDefault();
-            setVista("garantias");
-             }}
+              e.preventDefault();
+              setVista("garantias");
+            }}
           >
-          <span>▣</span> Garantías
+            <span></span> Garantías
           </a>
 
           <a
@@ -333,7 +368,7 @@ function Home({ usuario, onLogout }) {
               setVista("configuracionRed");
             }}
           >
-            <span>⚙</span> Configuración de red
+            <span></span> Configuración de red
           </a>
 
           <a
@@ -344,7 +379,7 @@ function Home({ usuario, onLogout }) {
               setVista("colaboradores");
             }}
           >
-            <span>♙</span> Colaboradores
+            <span></span> Colaboradores
           </a>
 
           <a
@@ -355,7 +390,7 @@ function Home({ usuario, onLogout }) {
               setVista("ubicaciones");
             }}
           >
-            <span>⌖</span> Ubicaciones
+            <span></span> Ubicaciones
           </a>
 
           <a
@@ -366,7 +401,7 @@ function Home({ usuario, onLogout }) {
               setVista("reportes");
             }}
           >
-            <span>▤</span> Reportes
+            <span></span> Reportes
           </a>
 
           <a
@@ -377,7 +412,7 @@ function Home({ usuario, onLogout }) {
               setVista("configuracion");
             }}
           >
-            <span>⚙</span> Configuración
+            <span></span> Configuración
           </a>
 
           <a
@@ -388,7 +423,7 @@ function Home({ usuario, onLogout }) {
               setVista("usuarios");
             }}
           >
-            <span>♙</span> Usuarios
+            <span></span> Usuarios
           </a>
 
           <a
@@ -399,12 +434,12 @@ function Home({ usuario, onLogout }) {
               setVista("roles");
             }}
           >
-            <span>♙</span> Administración de roles
+            <span></span> Administración de roles
           </a>
         </nav>
 
         <button className="logout-button" onClick={onLogout}>
-          <span>↪</span> Cerrar sesión
+          <span></span> Cerrar sesión
         </button>
       </aside>
 
@@ -470,6 +505,12 @@ function Home({ usuario, onLogout }) {
             setAsignacionesSoftware={setAsignacionesSoftware}
             setMovimientosKardex={setMovimientosKardex}
           />
+        ) : vista === "instalacionesSoftware" ? (
+          <InstalacionesSoftware
+            equipos={equipos}
+            instalaciones={instalacionesSoftware}
+            setInstalaciones={setInstalacionesSoftware}
+          />
         ) : vista === "kardex" ? (
           <Kardex
             equipos={equipos}
@@ -478,6 +519,8 @@ function Home({ usuario, onLogout }) {
             mantenimientos={mantenimientos}
             incidencias={incidencias}
           />
+        ) : vista === "auditoria" ? (
+          <Auditoria registros={registrosAuditoria} />
         ) : vista === "mantenimiento" ? (
           <Mantenimiento
             equipos={equipos}
@@ -509,8 +552,8 @@ function Home({ usuario, onLogout }) {
           />
         ) : vista === "garantias" ? (
           <Garantias
-          equipos={equipos}
-          proveedores={proveedores}
+            equipos={equipos}
+            proveedores={proveedores}
           />
         ) : vista === "configuracionRed" ? (
           <ConfiguracionRed equipos={equipos} />
@@ -538,21 +581,11 @@ function Home({ usuario, onLogout }) {
             setRoles={setRoles}
             usuarios={usuarios}
             setUsuarios={setUsuarios}
-/>
+          />
         ) : vista === "reportes" ? (
-          <div className="welcome-card">
-            <h2>Módulo de reportes</h2>
-            <p>
-              Aquí se podrán consultar los reportes generales del sistema.
-            </p>
-          </div>
+          <Reportes />
         ) : vista === "configuracion" ? (
-          <div className="welcome-card">
-            <h2>Configuración</h2>
-            <p>
-              Aquí se administrarán las configuraciones del sistema.
-            </p>
-          </div>
+          <Configuracion />
         ) : (
           <>
             <div className="welcome-card">

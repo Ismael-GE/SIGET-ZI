@@ -247,3 +247,57 @@
     flex-direction: column;
   }
 }
+/* Área de consulta */
+.reportes-consulta {
+  margin-top: 28px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e5eaf2;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(20, 35, 63, 0.05);
+}
+
+.reportes-consulta-heading {
+  margin-bottom: 20px;
+}
+
+.reportes-consulta-heading h3 {
+  color: #17243b;
+  font-size: 19px;
+  margin: 0 0 7px;
+}
+
+.reportes-consulta-heading p {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0;
+}
+
+.reportes-consulta-vacia {
+  padding: 30px 15px;
+  text-align: center;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 9px;
+}
+
+.reportes-consulta-vacia p {
+  color: #64748b;
+  margin: 0;
+}
+
+.reportes-consulta-contenido {
+  padding: 20px;
+  background: #f4f7ff;
+  border-radius: 9px;
+}
+
+.reportes-consulta-contenido p {
+  color: #64748b;
+  margin: 0 0 8px;
+}
+
+.reportes-consulta-contenido strong {
+  color: #3867e8;
+  font-size: 16px;
+}

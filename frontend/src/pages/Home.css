@@ -55,7 +55,7 @@
   letter-spacing: 1.2px;
 }
 
-/* OPCIONES DEL MENÚ */
+/* OPCIONES DEL MENÚ LATERAL */
 .sidebar-menu {
   display: grid;
   gap: 8px;
@@ -71,10 +71,15 @@
   text-decoration: none;
   font-size: 14px;
   transition: background 0.2s ease, color 0.2s ease;
+  box-sizing: border-box;
+  width: 100%;
+  text-align: left;
 }
 
 .sidebar-menu a span {
   width: 20px;
+  min-width: 20px;
+  flex-shrink: 0;
   text-align: center;
   font-size: 18px;
 }
