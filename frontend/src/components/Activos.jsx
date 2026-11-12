@@ -5,13 +5,14 @@ import "./Activos.css";
 const formularioInicial = {
   numero_inventario: "",
   id_tipo_activo: "",
+  tipo_equipo: "",
   id_estado_activo: "",
   id_proveedor_adquisicion: "",
   numero_serie: "",
   marca: "",
   modelo: "",
 
-  // Computadoras y dispositivos móviles
+  // Computadoras y tablets
   sistema_operativo: "",
   procesador: "",
   memoria_ram: "",
@@ -23,12 +24,9 @@ const formularioInicial = {
   tamano_pantalla: "",
   resolucion: "",
 
-  // Escáneres
-  resolucion_escaneo: "",
-  velocidad_escaneo: "",
+  // Lectores de código de barras
+  tipo_lectura_codigo: "",
   tipo_conexion: "",
-  alimentador_automatico: "",
-  escaneo_duplex: "",
 
   // Impresoras
   consumible: "",
@@ -79,7 +77,12 @@ const formularioInicial = {
   id_ubicacion: "",
 };
 
-function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware = [],}) {
+function Activos({
+  equipos = [],
+  setEquipos,
+  categorias = [],
+  asignacionesSoftware = [],
+}) {
   const [formulario, setFormulario] = useState(formularioInicial);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarAviso, setMostrarAviso] = useState(false);
@@ -137,13 +140,14 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
   const manejarCambio = (e) => {
     const { name, value } = e.target;
 
-    // Si cambia el tipo de activo, limpiar características técnicas.
+    // Si cambia la categoría, limpiar las características técnicas.
     if (name === "id_tipo_activo") {
       setFormulario((anterior) => ({
         ...anterior,
         id_tipo_activo: value,
+        tipo_equipo: "",
 
-        // Computadoras
+        // Computadoras y tablets
         sistema_operativo: "",
         procesador: "",
         memoria_ram: "",
@@ -155,12 +159,9 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
         tamano_pantalla: "",
         resolucion: "",
 
-        // Escáneres
-        resolucion_escaneo: "",
-        velocidad_escaneo: "",
+        // Lectores de código de barras
+        tipo_lectura_codigo: "",
         tipo_conexion: "",
-        alimentador_automatico: "",
-        escaneo_duplex: "",
 
         // Impresoras
         consumible: "",
@@ -224,13 +225,18 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
     categoriaSeleccionada?.categoria?.toLowerCase() || "";
 
   const nombreCategoriaNormalizado =
-    nombreCategoriaSeleccionada.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    nombreCategoriaSeleccionada
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
 
   // Identificar computadoras.
   const esComputadora =
     nombreCategoriaNormalizado.includes("computadora") ||
-    nombreCategoriaNormalizado.includes("computo") ||
-    nombreCategoriaNormalizado.includes("laptop");
+    nombreCategoriaNormalizado.includes("computo");
+
+  // Identificar tablets.
+  const esTablet =
+    nombreCategoriaNormalizado.includes("tablet");
 
   // Identificar impresoras.
   const esImpresora =
@@ -240,16 +246,16 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
   const esMonitor =
     nombreCategoriaNormalizado.includes("monitor");
 
-  // Identificar escáneres.
-  const esEscaner =
-    nombreCategoriaNormalizado.includes("escaner");
+  // Identificar lectores de código de barras.
+  const esLectorCodigo =
+    nombreCategoriaNormalizado.includes("lector") ||
+    nombreCategoriaNormalizado.includes("codigo de barras");
 
   // Identificar dispositivos móviles.
   const esDispositivoMovil =
     nombreCategoriaNormalizado.includes("movil") ||
     nombreCategoriaNormalizado.includes("celular") ||
-    nombreCategoriaNormalizado.includes("smartphone") ||
-    nombreCategoriaNormalizado.includes("tablet");
+    nombreCategoriaNormalizado.includes("smartphone");
 
   // Identificar equipos de red.
   const esEquipoRed =
@@ -274,6 +280,15 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
       mostrarMensaje(
         "Completa los campos obligatorios: tipo, estado, marca y modelo."
       );
+      return;
+    }
+
+    // Validar tipo de equipo.
+    if (
+      (esComputadora || esTablet) &&
+      !formulario.tipo_equipo
+    ) {
+      mostrarMensaje("Selecciona el tipo de equipo.");
       return;
     }
 
@@ -324,7 +339,9 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
       formulario.cantidad_licencias !== "" &&
       (!Number.isInteger(cantidadLicencias) || cantidadLicencias < 0)
     ) {
-      mostrarMensaje("La cantidad de licencias debe ser un número entero válido.");
+      mostrarMensaje(
+        "La cantidad de licencias debe ser un número entero válido."
+      );
       return;
     }
 
@@ -332,7 +349,9 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
       formulario.licencias_asignadas !== "" &&
       (!Number.isInteger(licenciasAsignadas) || licenciasAsignadas < 0)
     ) {
-      mostrarMensaje("Las licencias asignadas deben ser un número entero válido.");
+      mostrarMensaje(
+        "Las licencias asignadas deben ser un número entero válido."
+      );
       return;
     }
 
@@ -455,7 +474,8 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
       (activo.numero_inventario || "").toLowerCase().includes(texto) ||
       (activo.numero_serie || "").toLowerCase().includes(texto) ||
       (activo.marca || "").toLowerCase().includes(texto) ||
-      (activo.modelo || "").toLowerCase().includes(texto)
+      (activo.modelo || "").toLowerCase().includes(texto) ||
+      (activo.tipo_equipo || "").toLowerCase().includes(texto)
     );
   });
 
@@ -481,7 +501,7 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
       <div className="activos-filtros">
         <input
           type="text"
-          placeholder="Buscar por inventario, serie, marca o modelo..."
+          placeholder="Buscar por inventario, serie, marca, modelo o tipo..."
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
         />
@@ -507,7 +527,10 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
               activosFiltrados.map((activo) => (
                 <tr key={activo.id}>
                   <td>{activo.numero_inventario}</td>
-                  <td>{obtenerNombreCategoria(activo)}</td>
+                  <td>
+                    {obtenerNombreCategoria(activo)}
+                    {activo.tipo_equipo && ` · ${activo.tipo_equipo}`}
+                  </td>
                   <td>{activo.marca}</td>
                   <td>{activo.modelo}</td>
                   <td>{activo.numero_serie || "—"}</td>
@@ -610,6 +633,46 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
                     </select>
                   </div>
 
+                  {/* TIPO DE EQUIPO */}
+                  {(esComputadora || esTablet) && (
+                    <div className="campo-formulario">
+                      <label>Tipo de equipo *</label>
+
+                      <select
+                        name="tipo_equipo"
+                        value={formulario.tipo_equipo}
+                        onChange={manejarCambio}
+                        required
+                      >
+                        <option value="">Selecciona un tipo</option>
+
+                        {esComputadora && (
+                          <>
+                            <option value="Escritorio">
+                              Computadora de escritorio
+                            </option>
+                            <option value="Laptop">Laptop</option>
+                            <option value="MacBook">MacBook</option>
+                            <option value="iMac">iMac</option>
+                            <option value="Mac mini">Mac mini</option>
+                          </>
+                        )}
+
+                        {esTablet && (
+                          <>
+                            <option value="iPad">iPad</option>
+                            <option value="Tablet Android">
+                              Tablet Android
+                            </option>
+                            <option value="Otra tablet">
+                              Otra tablet
+                            </option>
+                          </>
+                        )}
+                      </select>
+                    </div>
+                  )}
+
                   <div className="campo-formulario">
                     <label>Estado del activo *</label>
                     <select
@@ -622,7 +685,9 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
                       <option value="Activo">Activo</option>
                       <option value="Disponible">Disponible</option>
                       <option value="Asignado">Asignado</option>
-                      <option value="En mantenimiento">En mantenimiento</option>
+                      <option value="En mantenimiento">
+                        En mantenimiento
+                      </option>
                       <option value="Baja">Baja</option>
                     </select>
                   </div>
@@ -656,7 +721,7 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
                       name="marca"
                       value={formulario.marca}
                       onChange={manejarCambio}
-                      placeholder="Ej. Lenovo"
+                      placeholder="Ej. Lenovo, HP, Apple"
                       required
                     />
                   </div>
@@ -715,10 +780,14 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
                 </div>
               </div>
 
-              {/* COMPUTADORAS Y LAPTOPS */}
-              {esComputadora && (
+              {/* COMPUTADORAS Y TABLETS */}
+              {(esComputadora || esTablet) && (
                 <div className="formulario-seccion">
-                  <h3>Características técnicas del equipo</h3>
+                  <h3>
+                    {esTablet
+                      ? "Características técnicas de la tablet"
+                      : "Características técnicas de la computadora"}
+                  </h3>
 
                   <div className="formulario-grid">
                     <div className="campo-formulario">
@@ -728,7 +797,7 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
                         name="sistema_operativo"
                         value={formulario.sistema_operativo}
                         onChange={manejarCambio}
-                        placeholder="Ej. Windows 11 Pro"
+                        placeholder="Ej. Windows 11, macOS, iPadOS"
                       />
                     </div>
 
@@ -739,7 +808,7 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
                         name="procesador"
                         value={formulario.procesador}
                         onChange={manejarCambio}
-                        placeholder="Ej. Intel Core i5"
+                        placeholder="Ej. Intel Core i5 o Apple M3"
                       />
                     </div>
 
@@ -827,9 +896,13 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
                       >
                         <option value="">Selecciona una opción</option>
                         <option value="Láser">Láser</option>
-                        <option value="Inyección de tinta">Inyección de tinta</option>
+                        <option value="Inyección de tinta">
+                          Inyección de tinta
+                        </option>
                         <option value="Térmica">Térmica</option>
-                        <option value="Matriz de puntos">Matriz de puntos</option>
+                        <option value="Matriz de puntos">
+                          Matriz de puntos
+                        </option>
                       </select>
                     </div>
 
@@ -842,7 +915,9 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
                       >
                         <option value="">Selecciona una opción</option>
                         <option value="Color">Color</option>
-                        <option value="Blanco y negro">Blanco y negro</option>
+                        <option value="Blanco y negro">
+                          Blanco y negro
+                        </option>
                       </select>
                     </div>
                   </div>
@@ -880,32 +955,24 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
                 </div>
               )}
 
-              {/* ESCÁNERES */}
-              {esEscaner && (
+              {/* LECTORES DE CÓDIGO DE BARRAS */}
+              {esLectorCodigo && (
                 <div className="formulario-seccion">
-                  <h3>Características del escáner</h3>
+                  <h3>Características del lector de código de barras</h3>
 
                   <div className="formulario-grid">
                     <div className="campo-formulario">
-                      <label>Resolución de escaneo</label>
-                      <input
-                        type="text"
-                        name="resolucion_escaneo"
-                        value={formulario.resolucion_escaneo}
+                      <label>Tipo de lectura</label>
+                      <select
+                        name="tipo_lectura_codigo"
+                        value={formulario.tipo_lectura_codigo}
                         onChange={manejarCambio}
-                        placeholder="Ej. 600 x 600 dpi"
-                      />
-                    </div>
-
-                    <div className="campo-formulario">
-                      <label>Velocidad de escaneo</label>
-                      <input
-                        type="text"
-                        name="velocidad_escaneo"
-                        value={formulario.velocidad_escaneo}
-                        onChange={manejarCambio}
-                        placeholder="Ej. 30 páginas por minuto"
-                      />
+                      >
+                        <option value="">Selecciona una opción</option>
+                        <option value="1D">Código de barras 1D</option>
+                        <option value="2D">Código 2D / QR</option>
+                        <option value="1D y 2D">Código 1D y 2D</option>
+                      </select>
                     </div>
 
                     <div className="campo-formulario">
@@ -916,36 +983,14 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
                         onChange={manejarCambio}
                       >
                         <option value="">Selecciona una opción</option>
+                        <option value="Bluetooth">Bluetooth</option>
                         <option value="USB">USB</option>
-                        <option value="Ethernet">Ethernet</option>
-                        <option value="Wi-Fi">Wi-Fi</option>
-                        <option value="USB y Wi-Fi">USB y Wi-Fi</option>
-                      </select>
-                    </div>
-
-                    <div className="campo-formulario">
-                      <label>Alimentador automático (ADF)</label>
-                      <select
-                        name="alimentador_automatico"
-                        value={formulario.alimentador_automatico}
-                        onChange={manejarCambio}
-                      >
-                        <option value="">Selecciona una opción</option>
-                        <option value="Sí">Sí</option>
-                        <option value="No">No</option>
-                      </select>
-                    </div>
-
-                    <div className="campo-formulario">
-                      <label>Escaneo dúplex (doble cara)</label>
-                      <select
-                        name="escaneo_duplex"
-                        value={formulario.escaneo_duplex}
-                        onChange={manejarCambio}
-                      >
-                        <option value="">Selecciona una opción</option>
-                        <option value="Sí">Sí</option>
-                        <option value="No">No</option>
+                        <option value="Receptor inalámbrico 2.4 GHz">
+                          Receptor inalámbrico 2.4 GHz
+                        </option>
+                        <option value="Cable USB y Bluetooth">
+                          Cable USB y Bluetooth
+                        </option>
                       </select>
                     </div>
                   </div>
@@ -1050,7 +1095,9 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
                         <option value="Router">Router</option>
                         <option value="Access Point">Access Point</option>
                         <option value="Firewall">Firewall</option>
-                        <option value="Convertidor de medios">Convertidor de medios</option>
+                        <option value="Convertidor de medios">
+                          Convertidor de medios
+                        </option>
                         <option value="Otro">Otro</option>
                       </select>
                     </div>
@@ -1111,7 +1158,9 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
                         <option value="Ethernet">Ethernet</option>
                         <option value="Fibra óptica">Fibra óptica</option>
                         <option value="Inalámbrica">Inalámbrica</option>
-                        <option value="Ethernet y fibra óptica">Ethernet y fibra óptica</option>
+                        <option value="Ethernet y fibra óptica">
+                          Ethernet y fibra óptica
+                        </option>
                       </select>
                     </div>
 
@@ -1159,11 +1208,17 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
                         onChange={manejarCambio}
                       >
                         <option value="">Selecciona una opción</option>
-                        <option value="Sistema operativo">Sistema operativo</option>
+                        <option value="Sistema operativo">
+                          Sistema operativo
+                        </option>
                         <option value="Ofimática">Ofimática</option>
                         <option value="Antivirus">Antivirus</option>
-                        <option value="Aplicación empresarial">Aplicación empresarial</option>
-                        <option value="Diseño y edición">Diseño y edición</option>
+                        <option value="Aplicación empresarial">
+                          Aplicación empresarial
+                        </option>
+                        <option value="Diseño y edición">
+                          Diseño y edición
+                        </option>
                         <option value="Otro">Otro</option>
                       </select>
                     </div>
@@ -1293,169 +1348,213 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
                   </div>
                 </div>
               )}
-                  {/* INFORMACIÓN DE ADQUISICIÓN */}
-                                    <div className="formulario-seccion">
-                                      <h3>Información de adquisición</h3>
 
-                                      <div className="formulario-grid">
-                                        <div className="campo-formulario">
-                                          <label>Fecha de adquisición</label>
-                                          <input
-                                            type="date"
-                                            name="fecha_adquisicion"
-                                            value={formulario.fecha_adquisicion}
-                                            onChange={manejarCambio}
-                                          />
-                                        </div>
+              {/* INFORMACIÓN DE ADQUISICIÓN */}
+              <div className="formulario-seccion">
+                <h3>Información de adquisición</h3>
 
-                                        <div className="campo-formulario">
-                                          <label>Costo de adquisición</label>
-                                          <input
-                                            type="number"
-                                            name="costo_adquisicion"
-                                            value={formulario.costo_adquisicion}
-                                            onChange={manejarCambio}
-                                            min="0"
-                                            step="0.01"
-                                            placeholder="0.00"
-                                          />
-                                        </div>
+                <div className="formulario-grid">
+                  <div className="campo-formulario">
+                    <label>Fecha de adquisición</label>
+                    <input
+                      type="date"
+                      name="fecha_adquisicion"
+                      value={formulario.fecha_adquisicion}
+                      onChange={manejarCambio}
+                    />
+                  </div>
 
-                                        <div className="campo-formulario">
-                                          <label>Moneda</label>
-                                          <select
-                                            name="moneda"
-                                            value={formulario.moneda}
-                                            onChange={manejarCambio}
-                                          >
-                                            <option value="MXN">MXN</option>
-                                            <option value="USD">USD</option>
-                                          </select>
-                                        </div>
+                  <div className="campo-formulario">
+                    <label>Costo de adquisición</label>
+                    <input
+                      type="number"
+                      name="costo_adquisicion"
+                      value={formulario.costo_adquisicion}
+                      onChange={manejarCambio}
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                    />
+                  </div>
 
-                                        <div className="campo-formulario">
-                                          <label>Número de factura</label>
-                                          <input
-                                            type="text"
-                                            name="numero_factura"
-                                            value={formulario.numero_factura}
-                                            onChange={manejarCambio}
-                                          />
-                                        </div>
+                  <div className="campo-formulario">
+                    <label>Moneda</label>
+                    <select
+                      name="moneda"
+                      value={formulario.moneda}
+                      onChange={manejarCambio}
+                    >
+                      <option value="MXN">MXN</option>
+                      <option value="USD">USD</option>
+                    </select>
+                  </div>
 
-                                        <div className="campo-formulario">
-                                          <label>Número de orden de compra</label>
-                                          <input
-                                            type="text"
-                                            name="numero_orden_compra"
-                                            value={formulario.numero_orden_compra}
-                                            onChange={manejarCambio}
-                                          />
-                                        </div>
-                                      </div>
-                                    </div>
+                  <div className="campo-formulario">
+                    <label>Número de factura</label>
+                    <input
+                      type="text"
+                      name="numero_factura"
+                      value={formulario.numero_factura}
+                      onChange={manejarCambio}
+                    />
+                  </div>
 
-                                    {/* INFORMACIÓN DE BAJA */}
-                                    <div className="formulario-seccion">
-                                      <h3>Información de baja</h3>
+                  <div className="campo-formulario">
+                    <label>Número de orden de compra</label>
+                    <input
+                      type="text"
+                      name="numero_orden_compra"
+                      value={formulario.numero_orden_compra}
+                      onChange={manejarCambio}
+                    />
+                  </div>
+                </div>
+              </div>
 
-                                      <div className="formulario-grid">
-                                        <div className="campo-formulario">
-                                          <label>Fecha de baja</label>
-                                          <input
-                                            type="date"
-                                            name="fecha_baja"
-                                            value={formulario.fecha_baja}
-                                            onChange={manejarCambio}
-                                          />
-                                        </div>
+              {/* INFORMACIÓN DE BAJA */}
+              <div className="formulario-seccion">
+                <h3>Información de baja</h3>
 
-                                        <div className="campo-formulario">
-                                          <label>Motivo de baja</label>
-                                          <input
-                                            type="text"
-                                            name="motivo_baja"
-                                            value={formulario.motivo_baja}
-                                            onChange={manejarCambio}
-                                          />
-                                        </div>
+                <div className="formulario-grid">
+                  <div className="campo-formulario">
+                    <label>Fecha de baja</label>
+                    <input
+                      type="date"
+                      name="fecha_baja"
+                      value={formulario.fecha_baja}
+                      onChange={manejarCambio}
+                    />
+                  </div>
 
-                                        <div className="campo-formulario campo-completo">
-                                          <label>Observaciones</label>
-                                          <textarea
-                                            name="observaciones"
-                                            value={formulario.observaciones}
-                                            onChange={manejarCambio}
-                                            rows="3"
-                                            placeholder="Información adicional del activo..."
-                                          />
-                                        </div>
-                                      </div>
-                                    </div>
+                  <div className="campo-formulario">
+                    <label>Motivo de baja</label>
+                    <input
+                      type="text"
+                      name="motivo_baja"
+                      value={formulario.motivo_baja}
+                      onChange={manejarCambio}
+                    />
+                  </div>
 
-                                    {/* BOTONES */}
-                                    <div className="modal-acciones">
-                                      <button
-                                        type="button"
-                                        className="btn-cancelar"
-                                        onClick={cerrarFormulario}
-                                      >
-                                        Cancelar
-                                      </button>
+                  <div className="campo-formulario campo-completo">
+                    <label>Observaciones</label>
+                    <textarea
+                      name="observaciones"
+                      value={formulario.observaciones}
+                      onChange={manejarCambio}
+                      rows="3"
+                      placeholder="Información adicional del activo..."
+                    />
+                  </div>
+                </div>
+              </div>
 
-                                      <button type="submit" className="btn-guardar">
-                                        {activoEditando !== null
-                                          ? "Guardar cambios"
-                                          : "Guardar activo"}
-                                      </button>
-                                    </div>
-                                  </form>
-                                </div>
-                              </div>
-                            )}
+              {/* BOTONES */}
+              <div className="modal-acciones">
+                <button
+                  type="button"
+                  className="btn-cancelar"
+                  onClick={cerrarFormulario}
+                >
+                  Cancelar
+                </button>
 
-                            {/* DETALLE DEL ACTIVO */}
-                            {activoDetalle && (
-                              <div
-                                className="modal-fondo"
-                                onClick={() => setActivoDetalle(null)}
-                              >
-                                <div
-                                  className="modal-activo"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <div className="modal-encabezado">
-                                    <h2>Detalle del activo</h2>
+                <button type="submit" className="btn-guardar">
+                  {activoEditando !== null
+                    ? "Guardar cambios"
+                    : "Guardar activo"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
-                                    <button
-                                      type="button"
-                                      className="btn-cerrar-modal"
-                                      onClick={() => setActivoDetalle(null)}
-                                    >
-                                      X
-                                    </button>
-                                  </div>
+      {/* DETALLE DEL ACTIVO */}
+      {activoDetalle && (
+        <div
+          className="modal-fondo"
+          onClick={() => setActivoDetalle(null)}
+        >
+          <div
+            className="modal-activo"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-encabezado">
+              <h2>Detalle del activo</h2>
+
+              <button
+                type="button"
+                className="btn-cerrar-modal"
+                onClick={() => setActivoDetalle(null)}
+              >
+                X
+              </button>
+            </div>
 
             {/* INFORMACIÓN GENERAL */}
             <div className="formulario-seccion">
               <h3>Información general</h3>
 
-              <p><strong>Inventario:</strong> {activoDetalle.numero_inventario}</p>
-              <p><strong>Tipo:</strong> {obtenerNombreCategoria(activoDetalle)}</p>
-              <p><strong>Estado:</strong> {activoDetalle.estado_activo}</p>
-              <p><strong>Marca:</strong> {activoDetalle.marca}</p>
-              <p><strong>Modelo:</strong> {activoDetalle.modelo}</p>
-              <p><strong>Serie:</strong> {activoDetalle.numero_serie || "—"}</p>
-              <p><strong>Proveedor:</strong> {activoDetalle.id_proveedor_adquisicion || "—"}</p>
+              <p>
+                <strong>Inventario:</strong>{" "}
+                {activoDetalle.numero_inventario}
+              </p>
+
+              <p>
+                <strong>Tipo:</strong>{" "}
+                {obtenerNombreCategoria(activoDetalle)}
+              </p>
+
+              {activoDetalle.tipo_equipo && (
+                <p>
+                  <strong>Tipo de equipo:</strong>{" "}
+                  {activoDetalle.tipo_equipo}
+                </p>
+              )}
+
+              <p>
+                <strong>Estado:</strong>{" "}
+                {activoDetalle.estado_activo}
+              </p>
+
+              <p>
+                <strong>Marca:</strong> {activoDetalle.marca}
+              </p>
+
+              <p>
+                <strong>Modelo:</strong> {activoDetalle.modelo}
+              </p>
+
+              <p>
+                <strong>Serie:</strong>{" "}
+                {activoDetalle.numero_serie || "—"}
+              </p>
+
+              <p>
+                <strong>Proveedor:</strong>{" "}
+                {activoDetalle.id_proveedor_adquisicion || "—"}
+              </p>
             </div>
 
             {/* UBICACIÓN */}
             <div className="formulario-seccion">
               <h3>Ubicación del activo</h3>
 
-              <p><strong>Sede:</strong> {activoDetalle.id_sede || "—"}</p>
-              <p><strong>Departamento:</strong> {activoDetalle.id_departamento || "—"}</p>
-              <p><strong>Ubicación:</strong> {activoDetalle.id_ubicacion || "—"}</p>
+              <p>
+                <strong>Sede:</strong>{" "}
+                {activoDetalle.id_sede || "—"}
+              </p>
+
+              <p>
+                <strong>Departamento:</strong>{" "}
+                {activoDetalle.id_departamento || "—"}
+              </p>
+
+              <p>
+                <strong>Ubicación:</strong>{" "}
+                {activoDetalle.id_ubicacion || "—"}
+              </p>
             </div>
 
             {/* CARACTERÍSTICAS TÉCNICAS */}
@@ -1471,11 +1570,8 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
                 ["Dirección MAC", "direccion_mac"],
                 ["Tamaño de pantalla", "tamano_pantalla"],
                 ["Resolución", "resolucion"],
-                ["Resolución de escaneo", "resolucion_escaneo"],
-                ["Velocidad de escaneo", "velocidad_escaneo"],
+                ["Tipo de lectura", "tipo_lectura_codigo"],
                 ["Tipo de conexión", "tipo_conexion"],
-                ["Alimentador automático (ADF)", "alimentador_automatico"],
-                ["Escaneo dúplex", "escaneo_duplex"],
                 ["Consumible", "consumible"],
                 ["Tipo de impresión", "tipo_impresion"],
                 ["Color", "color"],
@@ -1502,6 +1598,7 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
             {/* SOFTWARE Y LICENCIAMIENTO */}
             <div className="formulario-seccion">
               <h3>Software y licenciamiento</h3>
+
               {[
                 ["Tipo de software", "tipo_software"],
                 ["Nombre del software", "nombre_software"],
@@ -1524,60 +1621,70 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
                 ) : null
               )}
             </div>
+
             {/* SOFTWARE INSTALADO Y ASIGNADO */}
-<div className="formulario-seccion">
-  <h3>Software instalado y asignado</h3>
+            <div className="formulario-seccion">
+              <h3>Software instalado y asignado</h3>
 
-  {(() => {
-    const softwareDelEquipo = asignacionesSoftware.filter(
-      (asignacion) =>
-        asignacion.destino === "Equipo" &&
-        String(asignacion.equipoId) === String(activoDetalle.id) &&
-        asignacion.estado === "Asignada"
-    );
+              {(() => {
+                const softwareDelEquipo = asignacionesSoftware.filter(
+                  (asignacion) =>
+                    asignacion.destino === "Equipo" &&
+                    String(asignacion.equipoId) ===
+                      String(activoDetalle.id) &&
+                    asignacion.estado === "Asignada"
+                );
 
-    if (softwareDelEquipo.length === 0) {
-      return (
-        <p>
-          Este equipo no tiene software ni licencias asignadas.
-        </p>
-      );
-    }
+                if (softwareDelEquipo.length === 0) {
+                  return (
+                    <p>
+                      Este equipo no tiene software ni licencias asignadas.
+                    </p>
+                  );
+                }
 
-    return softwareDelEquipo.map((asignacion) => (
-      <div key={asignacion.id}>
-        <p>
-          <strong>Software:</strong> {asignacion.software}
-        </p>
+                return softwareDelEquipo.map((asignacion) => (
+                  <div key={asignacion.id}>
+                    <p>
+                      <strong>Software:</strong>{" "}
+                      {asignacion.software}
+                    </p>
 
-        <p>
-          <strong>Versión:</strong> {asignacion.version}
-        </p>
+                    <p>
+                      <strong>Versión:</strong>{" "}
+                      {asignacion.version}
+                    </p>
 
-        <p>
-          <strong>Fecha de asignación:</strong>{" "}
-          {asignacion.fecha || "—"}
-        </p>
+                    <p>
+                      <strong>Fecha de asignación:</strong>{" "}
+                      {asignacion.fecha || "—"}
+                    </p>
 
-        <p>
-          <strong>Estado:</strong> {asignacion.estado}
-        </p>
+                    <p>
+                      <strong>Estado:</strong>{" "}
+                      {asignacion.estado}
+                    </p>
 
-        <p>
-          <strong>Observaciones:</strong>{" "}
-          {asignacion.observaciones || "—"}
-        </p>
+                    <p>
+                      <strong>Observaciones:</strong>{" "}
+                      {asignacion.observaciones || "—"}
+                    </p>
 
-        <hr />
-      </div>
-    ));
-  })()}
-</div>
+                    <hr />
+                  </div>
+                ));
+              })()}
+            </div>
+
             {/* ADQUISICIÓN */}
             <div className="formulario-seccion">
               <h3>Información de adquisición</h3>
 
-              <p><strong>Fecha de adquisición:</strong> {activoDetalle.fecha_adquisicion || "—"}</p>
+              <p>
+                <strong>Fecha de adquisición:</strong>{" "}
+                {activoDetalle.fecha_adquisicion || "—"}
+              </p>
+
               <p>
                 <strong>Costo:</strong>{" "}
                 {activoDetalle.costo_adquisicion !== ""
@@ -1585,17 +1692,36 @@ function Activos({equipos = [],setEquipos,categorias = [],asignacionesSoftware =
                   : "—"}{" "}
                 {activoDetalle.moneda}
               </p>
-              <p><strong>Factura:</strong> {activoDetalle.numero_factura || "—"}</p>
-              <p><strong>Orden de compra:</strong> {activoDetalle.numero_orden_compra || "—"}</p>
+
+              <p>
+                <strong>Factura:</strong>{" "}
+                {activoDetalle.numero_factura || "—"}
+              </p>
+
+              <p>
+                <strong>Orden de compra:</strong>{" "}
+                {activoDetalle.numero_orden_compra || "—"}
+              </p>
             </div>
 
             {/* BAJA Y OBSERVACIONES */}
             <div className="formulario-seccion">
               <h3>Información de baja</h3>
 
-              <p><strong>Fecha de baja:</strong> {activoDetalle.fecha_baja || "—"}</p>
-              <p><strong>Motivo de baja:</strong> {activoDetalle.motivo_baja || "—"}</p>
-              <p><strong>Observaciones:</strong> {activoDetalle.observaciones || "—"}</p>
+              <p>
+                <strong>Fecha de baja:</strong>{" "}
+                {activoDetalle.fecha_baja || "—"}
+              </p>
+
+              <p>
+                <strong>Motivo de baja:</strong>{" "}
+                {activoDetalle.motivo_baja || "—"}
+              </p>
+
+              <p>
+                <strong>Observaciones:</strong>{" "}
+                {activoDetalle.observaciones || "—"}
+              </p>
             </div>
 
             <div className="modal-acciones">

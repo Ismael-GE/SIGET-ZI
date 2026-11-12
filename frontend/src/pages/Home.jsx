@@ -124,19 +124,21 @@ function Home({ usuario, onLogout }) {
   // Los departamentos se conectarán posteriormente con su catálogo.
   const [departamentos] = useState([]);
 
-  // Categorías iniciales del inventario.
-  const categoriasIniciales = [
-    { id_tipo_activo: 1, categoria: "Computadoras", habilitado: true },
-    { id_tipo_activo: 2, categoria: "Laptops", habilitado: true },
-    { id_tipo_activo: 3, categoria: "Impresoras", habilitado: true },
-    { id_tipo_activo: 4, categoria: "Monitores", habilitado: true },
-    { id_tipo_activo: 5, categoria: "Escáneres", habilitado: true },
-    { id_tipo_activo: 6, categoria: "Dispositivos móviles", habilitado: true },
-    { id_tipo_activo: 7, categoria: "Equipos de red", habilitado: true },
-    { id_tipo_activo: 8, categoria: "Software y licenciamiento", habilitado: true },
-    { id_tipo_activo: 9, categoria: "Refacciones y accesorios", habilitado: true },
-    { id_tipo_activo: 10, categoria: "Tablets", habilitado: true },
-  ];
+
+// Categorías iniciales del inventario.
+const categoriasIniciales = [
+  { id_tipo_activo: 1, categoria: "Computadora", habilitado: true },
+  { id_tipo_activo: 3, categoria: "Impresora", habilitado: true },
+  { id_tipo_activo: 4, categoria: "Monitor", habilitado: true },
+  { id_tipo_activo: 5, categoria: "Lector de código de barras", habilitado: true },
+  { id_tipo_activo: 6, categoria: "Dispositivo móvil", habilitado: true },
+  { id_tipo_activo: 7, categoria: "Equipo de red", habilitado: true },
+  { id_tipo_activo: 8, categoria: "Software y licenciamiento", habilitado: true },
+  { id_tipo_activo: 9, categoria: "Refacción y accesorio", habilitado: true },
+  { id_tipo_activo: 10, categoria: "Tablet", habilitado: true },
+  
+];
+
 
   const [categorias, setCategorias] = useState(categoriasIniciales);
 
